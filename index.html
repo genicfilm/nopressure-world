@@ -86,7 +86,8 @@ a:hover .arrow,button:hover .arrow{transform:translate(3px,-3px)}
 .done p{margin:0 0 16px;font-size:17px;line-height:1.4;color:var(--pale);letter-spacing:-.015em}
 .done .acts{display:flex;flex-wrap:wrap;gap:12px 28px}
 .done .acts a,.done .acts button{background:none;border:0;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
-.note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:11.5px;line-height:1.45;color:var(--pale);max-width:52ch;margin-top:10px}.note.consent a{text-decoration:underline}
+.note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:10.5px;line-height:1.4;color:var(--pale);opacity:.8;max-width:52ch;margin-top:8px}
+.js-mode{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}.note.consent a{text-decoration:underline}
 .done form{margin:0 0 18px;max-width:420px}.done .row input{font-size:17px}.done .added{margin:0 0 16px;font-size:15px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
@@ -212,7 +213,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
         <label class="sr" for="p1">Phone number</label>
         <div class="row"><input id="p1" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
         <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-        <p class="mono note">One text when the first drop opens. US numbers. No pressure.</p>
+        <p class="mono note">One text when the first drop opens. <button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
         <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
       </form>
     </div>
@@ -347,7 +348,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       <label class="sr" for="p2">Phone number</label>
       <div class="row"><input id="p2" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
       <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-      <p class="mono note">One text when the first drop opens. US numbers. Leave anytime.</p>
+      <p class="mono note">One text when the first drop opens. <button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
       <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
     </form>
   </div>
@@ -434,22 +435,34 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
 
   document.querySelectorAll('.js-join').forEach(form => {
+    const input = form.querySelector('.row input'), consent = form.querySelector('.consent'), modeBtn = form.querySelector('.js-mode');
+    const setMode = (m) => {
+      form.dataset.mode = m;
+      if (m === 'email') { input.name = 'email'; input.type = 'email'; input.inputMode = 'email'; input.autocomplete = 'email'; input.placeholder = 'Your email'; if (consent) consent.hidden = true; if (modeBtn) { modeBtn.textContent = 'Text me instead ↗'; modeBtn.dataset.mode = 'phone'; } }
+      else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
+      input.value = ''; form.querySelector('.err')?.remove();
+    };
+    modeBtn?.addEventListener('click', () => { setMode(modeBtn.dataset.mode); input.focus(); });
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
-      const input = form.querySelector('input[name=phone]'), btn = form.querySelector('button');
+      const btn = form.querySelector('.row button');
       form.querySelector('.err')?.remove();
       if (form.querySelector('input[name=website]').value) return;
-      const phone = e164(input.value);
-      if (!phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
+      const emailMode = form.dataset.mode === 'email';
+      const phone = emailMode ? null : e164(input.value);
+      const email = emailMode ? input.value.trim().toLowerCase() : null;
+      if (!emailMode && !phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
+      if (emailMode && !EMAIL.test(email)) return fail(form, input, 'That email doesn’t look right.');
       btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Joining…';
       try {
-        await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place);
-        store.set('np_joined', '1'); store.set('np_phone', phone);
-        try { window.fbq && fbq('track', 'Lead', { content_name: 'np_waitlist_phone' }); } catch (e) {}
+        if (emailMode) { await subscribe({ email }, form.dataset.place + '-email'); store.set('np_email', '1'); }
+        else { await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place); store.set('np_phone', phone); }
+        store.set('np_joined', '1');
+        try { window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }); } catch (e) {}
         allDone();
       } catch (e) {
         btn.disabled = false; btn.innerHTML = label;
-        fail(form, input, 'Couldn’t save that. Check the number and try again.');
+        fail(form, input, emailMode ? 'Couldn’t save that. Try again in a moment.' : 'Couldn’t save that. Check the number and try again.');
       }
     });
   });

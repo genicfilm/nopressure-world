@@ -435,9 +435,10 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
 
   document.querySelectorAll('.js-join').forEach(form => {
-    const input = form.querySelector('.row input'), consent = form.querySelector('.consent'), modeBtn = form.querySelector('.js-mode');
+    const input = form.querySelector('.row input'), consent = form.querySelector('.consent'), modeBtn = form.querySelector('.js-mode'), note = form.querySelector('.note');
     const setMode = (m) => {
       form.dataset.mode = m;
+      if (note && note.firstChild) note.firstChild.textContent = (m === 'email' ? 'One email when the first drop opens. ' : 'One text when the first drop opens. ');
       if (m === 'email') { input.name = 'email'; input.type = 'email'; input.inputMode = 'email'; input.autocomplete = 'email'; input.placeholder = 'Your email'; if (consent) consent.hidden = true; if (modeBtn) { modeBtn.textContent = 'Text me instead ↗'; modeBtn.dataset.mode = 'phone'; } }
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();

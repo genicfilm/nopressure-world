@@ -86,6 +86,8 @@ a:hover .arrow,button:hover .arrow{transform:translate(3px,-3px)}
 .done p{margin:0 0 16px;font-size:17px;line-height:1.4;color:var(--pale);letter-spacing:-.015em}
 .done .acts{display:flex;flex-wrap:wrap;gap:12px 28px}
 .done .acts a,.done .acts button{background:none;border:0;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:11.5px;line-height:1.45;color:var(--pale);max-width:52ch;margin-top:10px}.note.consent a{text-decoration:underline}
+.done form{margin:0 0 18px;max-width:420px}.done .row input{font-size:17px}.done .added{margin:0 0 16px;font-size:15px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* sections */
@@ -178,6 +180,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
 }
 @media (min-width:760px){.dock{display:none}}
 </style>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1373648701324064');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1373648701324064&ev=PageView&noscript=1"></noscript>
 </head>
 <body>
 <a class="skip" href="#join">Skip to the waitlist</a>
@@ -205,10 +209,11 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       <h1 id="t1">The urge<br>to press.</h1>
       <p class="lede">The night-before trick, from backstage. A small silver X, worn where a piercing would go.</p>
       <form class="form js-join" novalidate data-place="hero">
-        <label class="sr" for="e1">Email address</label>
-        <div class="row"><input id="e1" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Your email" required maxlength="254"><button type="submit" class="mono"><span class="long">Join the waitlist</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
+        <label class="sr" for="p1">Phone number</label>
+        <div class="row"><input id="p1" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
         <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-        <p class="mono note">The first drop goes to the list. No pressure.</p>
+        <p class="mono note">One text when the first drop opens. US numbers. No pressure.</p>
+        <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
       </form>
     </div>
     <a class="scroll-cue mono" href="#secret">Scroll <span aria-hidden="true">↓</span></a>
@@ -339,10 +344,11 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     <h2 id="t10">Want in?</h2>
     <p class="lede" style="margin-bottom:34px">Get on the list. First drop, first access.</p>
     <form class="form js-join" novalidate data-place="final">
-      <label class="sr" for="e2">Email address</label>
-      <div class="row"><input id="e2" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Your email" required maxlength="254"><button type="submit" class="mono"><span class="long">Join the waitlist</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
+      <label class="sr" for="p2">Phone number</label>
+      <div class="row"><input id="p2" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
       <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-      <p class="mono note">Launch news by email. Leave anytime.</p>
+      <p class="mono note">One text when the first drop opens. US numbers. Leave anytime.</p>
+      <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
     </form>
   </div>
 </section>
@@ -362,7 +368,11 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     <svg aria-hidden="true"><use href="#x"/></svg>
     <div>
       <h3>You’re on the list.</h3>
-      <p>The first drop goes to you. It’s still a secret, so tell one friend.</p>
+      <p>One text when the doors open. Want it by email too?</p>
+      <form class="form js-email" novalidate>
+        <label class="sr" for="em">Email address</label>
+        <div class="row"><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="Your email" maxlength="254"><button type="submit" class="mono">Add <span class="arrow" aria-hidden="true">↗</span></button></div>
+      </form>
       <div class="acts mono">
         <button type="button" class="js-share">Send it to a friend ↗</button>
         <a href="https://www.instagram.com/nopressure.world/" target="_blank" rel="noopener">Follow @nopressure.world ↗</a>
@@ -373,49 +383,73 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
 
 <script>
 (() => {
-  // ---- Waitlist: Klaviyo client subscriptions -> list VtUvii (NO PRESSURE — Waitlist)
+  // ---- Waitlist: Klaviyo client subscriptions -> list VtUvii (NO PRESSURE — Waitlist). Phone first (SMS consent), email as step two.
   const COMPANY = 'XVVLZu', LIST = 'VtUvii';
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const qs = new URLSearchParams(location.search);
   const utm = {};
   ['utm_source','utm_medium','utm_campaign','utm_content','ref'].forEach(k => { if (qs.get(k)) utm['np_' + k] = qs.get(k).slice(0, 100); });
-  let joined = false;
-  try { joined = localStorage.getItem('np_joined') === '1'; } catch (e) {}
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  const joined = store.get('np_joined') === '1';
 
-  function showDone(form) {
-    const node = document.getElementById('done-tpl').content.cloneNode(true);
-    form.replaceWith(node);
+  function e164(v) {
+    const d = (v || '').replace(/\D/g, '');
+    if (d.length === 10) return '+1' + d;
+    if (d.length === 11 && d[0] === '1') return '+' + d;
+    return null;
   }
-  function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock').remove(); }
-
-  async function subscribe(email, place) {
-    const body = { data: { type: 'subscription', attributes: {
-      custom_source: 'nopressure.world · ' + place,
-      profile: { data: { type: 'profile', attributes: { email, properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname }, utm) } } }
-    }, relationships: { list: { data: { type: 'list', id: LIST } } } } };
+  async function subscribe(attrs, place) {
+    const profile = Object.assign({ properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname }, utm) }, attrs);
+    const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
+      relationships: { list: { data: { type: 'list', id: LIST } } } } };
     const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + COMPANY, {
-      method: 'POST', headers: { 'Content-Type': 'application/vnd.api+json', 'revision': '2024-10-15' }, body: JSON.stringify(body)
+      method: 'POST', headers: { 'Content-Type': 'application/vnd.api+json', 'revision': '2025-07-15' }, body: JSON.stringify(body)
     });
     if (!(r.status === 202 || r.ok)) throw new Error('status ' + r.status);
   }
+  function fail(form, input, msg) { form.querySelector('.err')?.remove(); const p = document.createElement('p'); p.className = 'err'; p.setAttribute('role', 'alert'); p.textContent = msg; form.append(p); input.setAttribute('aria-invalid', 'true'); input.focus(); }
+
+  function wireEmail(form) {
+    if (store.get('np_email') === '1') { const p = document.createElement('p'); p.className = 'added mono'; p.textContent = 'Email added.'; form.replaceWith(p); return; }
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const input = form.querySelector('input[name=email]'), btn = form.querySelector('button');
+      const email = input.value.trim().toLowerCase();
+      if (!EMAIL.test(email)) return fail(form, input, 'That email doesn’t look right.');
+      btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Adding…';
+      const attrs = { email }; const phone = store.get('np_phone'); if (phone) attrs.phone_number = phone;
+      try {
+        await subscribe(attrs, 'email-step');
+        store.set('np_email', '1');
+        document.querySelectorAll('.js-email').forEach(f => { const p = document.createElement('p'); p.className = 'added mono'; p.textContent = 'Email added.'; f.replaceWith(p); });
+      } catch (e) { btn.disabled = false; btn.innerHTML = label; fail(form, input, 'Couldn’t save that. Try again in a moment.'); }
+    });
+  }
+  function showDone(form) {
+    const node = document.getElementById('done-tpl').content.cloneNode(true);
+    const emailForm = node.querySelector('.js-email');
+    form.replaceWith(node);
+    wireEmail(emailForm);
+  }
+  function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
 
   document.querySelectorAll('.js-join').forEach(form => {
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
-      const input = form.querySelector('input[name=email]'), btn = form.querySelector('button');
+      const input = form.querySelector('input[name=phone]'), btn = form.querySelector('button');
       form.querySelector('.err')?.remove();
       if (form.querySelector('input[name=website]').value) return;
-      const email = input.value.trim().toLowerCase();
-      const fail = (msg) => { const p = document.createElement('p'); p.className = 'err'; p.setAttribute('role', 'alert'); p.textContent = msg; form.append(p); input.setAttribute('aria-invalid', 'true'); input.focus(); };
-      if (!EMAIL.test(email)) return fail('That email doesn’t look right.');
+      const phone = e164(input.value);
+      if (!phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
       btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Joining…';
       try {
-        await subscribe(email, form.dataset.place);
-        try { localStorage.setItem('np_joined', '1'); } catch (e) {}
+        await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place);
+        store.set('np_joined', '1'); store.set('np_phone', phone);
+        try { window.fbq && fbq('track', 'Lead', { content_name: 'np_waitlist_phone' }); } catch (e) {}
         allDone();
       } catch (e) {
         btn.disabled = false; btn.innerHTML = label;
-        fail('Couldn’t save that. Try again in a moment.');
+        fail(form, input, 'Couldn’t save that. Check the number and try again.');
       }
     });
   });
@@ -429,7 +463,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       return;
     }
     const f = ev.target.closest('[data-focus]');
-    if (f) { const input = document.querySelector('#join input[name=email]'); if (input) setTimeout(() => input.focus({ preventScroll: true }), 450); }
+    if (f) { const input = document.querySelector('#join input[name=phone]'); if (input) setTimeout(() => input.focus({ preventScroll: true }), 450); }
   });
 
   // ---- Header turns ink over the paper (plate) section

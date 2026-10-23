@@ -86,7 +86,7 @@ a:hover .arrow,button:hover .arrow{transform:translate(3px,-3px)}
 .done p{margin:0 0 16px;font-size:17px;line-height:1.4;color:var(--pale);letter-spacing:-.015em}
 .done .acts{display:flex;flex-wrap:wrap;gap:12px 28px}
 .done .acts a,.done .acts button{background:none;border:0;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
-.note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:10.5px;line-height:1.4;color:var(--pale);opacity:.8;max-width:52ch;margin-top:8px}
+.note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:10px;line-height:1.4;color:var(--pale);opacity:.6;max-width:60ch;margin-top:8px}
 .js-mode{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}.note.consent a{text-decoration:underline}
 .done form{margin:0 0 18px;max-width:420px}.done .row input{font-size:17px}.done .added{margin:0 0 16px;font-size:15px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -209,13 +209,13 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     <div>
       <p class="mono cat">Ear marks</p>
       <h1 id="t1">The urge<br>to press.</h1>
-      <p class="lede">Ear acupressure patches. The night-before trick from backstage, as a small silver X worn where a piercing would go.</p>
+      <p class="lede">Ear acupressure patches, worn as a small silver X.</p>
       <form class="form js-join" novalidate data-place="hero">
         <label class="sr" for="p1">Phone number</label>
-        <div class="row"><input id="p1" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
+        <div class="row"><input id="p1" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="cta">Text me</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
         <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-        <p class="mono note">One text when the first drop opens. The list shops first. <button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
-        <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
+        <p class="mono note"><button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
+        <p class="note consent">Automated marketing texts from NO PRESSURE. Not a condition of purchase. Msg &amp; data rates may apply. STOP to end, HELP for help. <a href="/privacy.html">Privacy</a></p>
       </form>
     </div>
     <a class="scroll-cue mono" href="#secret">Scroll <span aria-hidden="true">↓</span></a>
@@ -274,10 +274,10 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     <p class="lede" style="margin-bottom:34px">One text when the doors open. Nothing else.</p>
     <form class="form js-join" novalidate data-place="final">
       <label class="sr" for="p2">Phone number</label>
-      <div class="row"><input id="p2" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="long">Text me the drop</span><span class="short">Join</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
+      <div class="row"><input id="p2" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" required maxlength="24"><button type="submit" class="mono"><span class="cta">Text me</span> <span class="arrow" aria-hidden="true">↗</span></button></div>
       <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
-      <p class="mono note">One text when the first drop opens. <button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
-      <p class="note consent">By joining you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
+      <p class="mono note"><button type="button" class="js-mode" data-mode="email">Prefer email? ↗</button></p>
+      <p class="note consent">Automated marketing texts from NO PRESSURE. Not a condition of purchase. Msg &amp; data rates may apply. STOP to end, HELP for help. <a href="/privacy.html">Privacy</a></p>
     </form>
   </div>
 </section>
@@ -396,8 +396,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     const line = node.querySelector('.js-done-line'), emailForm = node.querySelector('.js-email'), phoneForm = node.querySelector('.js-phone');
     const gavePhone = !!store.get('np_phone'), gaveEmail = store.get('np_email') === '1';
     // Step two asks for whichever identifier they did not give. Phone joiners get the email ask (as before); email joiners get the text ask.
-    if (gavePhone || !gaveEmail) { line.textContent = 'One text when the doors open. Want it by email too?'; phoneForm.remove(); wireEmail(emailForm); }
-    else { line.textContent = 'One email when the doors open. Want a text too?'; emailForm.remove(); wirePhone(phoneForm); }
+    if (gavePhone || !gaveEmail) { line.textContent = 'One text when it drops. Email too?'; phoneForm.remove(); wireEmail(emailForm); }
+    else { line.textContent = 'One email when it drops. Text too?'; emailForm.remove(); wirePhone(phoneForm); }
     form.replaceWith(node);
   }
   function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
@@ -406,7 +406,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     const input = form.querySelector('.row input'), consent = form.querySelector('.consent'), modeBtn = form.querySelector('.js-mode'), note = form.querySelector('.note');
     const setMode = (m) => {
       form.dataset.mode = m;
-      if (note && note.firstChild) note.firstChild.textContent = (m === 'email' ? 'One email when the first drop opens. ' : 'One text when the first drop opens. ');
+      const cta = form.querySelector('.row .cta'); if (cta) cta.textContent = (m === 'email' ? 'Join' : 'Text me');
       if (m === 'email') { input.name = 'email'; input.type = 'email'; input.inputMode = 'email'; input.autocomplete = 'email'; input.placeholder = 'Your email'; if (consent) consent.hidden = true; if (modeBtn) { modeBtn.textContent = 'Text me instead ↗'; modeBtn.dataset.mode = 'phone'; } }
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();

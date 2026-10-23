@@ -88,7 +88,7 @@ a:hover .arrow,button:hover .arrow{transform:translate(3px,-3px)}
 .done .acts a,.done .acts button{background:none;border:0;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .note.consent{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:10px;line-height:1.4;color:var(--pale);opacity:.6;max-width:60ch;margin-top:8px}
 .js-mode{background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}.note.consent a{text-decoration:underline}
-.done .js-ref-url{font-size:15px;color:var(--pale);margin:0 0 14px;word-break:break-all;user-select:all}
+.done .js-ref-url{font-size:15px;color:var(--pale);margin:0 0 14px;word-break:break-all;user-select:all;text-transform:none;letter-spacing:0}
 .done form{margin:0 0 18px;max-width:420px}.done .row input{font-size:17px}.done .added{margin:0 0 16px;font-size:15px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
@@ -331,6 +331,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   // Referral machine (Oct 23 2026): a ?ref=CODE arrival is remembered for 30 days so a later join still credits the friend; a joiner gets a personal code (np_code)
   // and a personal link. genic-pc np_list_sync.py turns np_ref matches into np_referrals + np_position on the profile; the welcome text carries the number.
   const REF_OK = /^[a-z0-9]{4,12}$/;
+  if (utm.np_ref) utm.np_ref = utm.np_ref.toLowerCase();
   if (utm.np_ref && !REF_OK.test(utm.np_ref)) delete utm.np_ref;
   if (utm.np_ref) store.set('np_ref', utm.np_ref + '|' + Date.now());
   else { const r = (store.get('np_ref') || '').split('|'); if (r[0] && REF_OK.test(r[0]) && Date.now() - (+r[1] || 0) < 30 * 864e5) utm.np_ref = r[0]; }

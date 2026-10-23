@@ -297,7 +297,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   <div class="done" role="status">
     <svg aria-hidden="true"><use href="#x"/></svg>
     <div>
-      <h3>You’re on the list.</h3>
+      <h3 class="js-done-h">You’re on the list.</h3>
       <p class="js-done-line">One text when the doors open. Want it by email too?</p>
       <form class="form js-email" novalidate>
         <label class="sr" for="em">Email address</label>
@@ -308,7 +308,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
         <div class="row"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" maxlength="24"><button type="submit" class="mono">Add <span class="arrow" aria-hidden="true">↗</span></button></div>
         <p class="note consent">By adding your number you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
       </form>
-      <p class="js-ref-line">Your link. Every friend who joins through it moves you up the list.</p>
+      <p class="js-ref-line">The list shops first, top down. Every friend who joins through your link moves you up 5.</p>
       <p class="mono js-ref-url" aria-label="Your personal link"></p>
       <div class="acts mono">
         <button type="button" class="js-share">Send your link ↗</button>
@@ -341,6 +341,15 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     c = Array.from(b, x => A[x % A.length]).join(''); store.set('np_code', c); return c;
   }
   const myLink = () => 'https://nopressure.world/?ref=' + myCode();
+  // Position: count.json is written to this repo by genic-pc (np_list_sync.py) whenever the list count changes. A joiner is count + 1 at the moment of joining;
+  // stored locally and stamped on the profile as np_position so the welcome text can say the number. Later referral credit re-ranks server-side.
+  let listCount = null;
+  const countReady = fetch('/count.json?t=' + Math.floor(Date.now() / 6e4), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && Number.isFinite(j.count)) listCount = j.count; }).catch(() => {});
+  function myPosition() {
+    const p = parseInt(store.get('np_position') || '', 10); if (p > 0) return p;
+    if (listCount === null) return null;
+    const n = listCount + 1; store.set('np_position', String(n)); return n;
+  }
   // A/B (Oct 22 2026): which field the form asks for first. 50/50 per visitor, sticky in localStorage; ?v=email|phone forces one for QA.
   // Stamped on every join as np_form_variant; a per-variant custom pixel event gives the denominator in Events Manager.
   const forced = qs.get('v'); let variant = store.get('np_variant');
@@ -365,7 +374,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   }
   function eventId() { try { return crypto.randomUUID(); } catch (e) { return 'np-' + Date.now() + '-' + Math.random().toString(16).slice(2); } }
   async function subscribe(attrs, place, extra) {
-    const props = Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant, np_code: myCode(), np_share_url: myLink() }, utm, extra || {});
+    const pos = myPosition();
+    const props = Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant, np_code: myCode(), np_share_url: myLink() }, pos ? { np_position: pos, np_rank: pos } : {}, utm, extra || {});
     if (props.np_ref === props.np_code) delete props.np_ref;
     const profile = Object.assign({ properties: props }, attrs);
     const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
@@ -417,6 +427,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     if (gavePhone || !gaveEmail) { line.textContent = 'One text when it drops. Email too?'; phoneForm.remove(); wireEmail(emailForm); }
     else { line.textContent = 'One email when it drops. Text too?'; emailForm.remove(); wirePhone(phoneForm); }
     node.querySelector('.js-ref-url').textContent = myLink().replace('https://', '');
+    const pos = myPosition(); if (pos) node.querySelector('.js-done-h').textContent = 'You’re #' + pos + '.';
     form.replaceWith(node);
   }
   function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
@@ -443,6 +454,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       if (!emailMode && !phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
       if (emailMode && !EMAIL.test(email)) return fail(form, input, 'That email doesn’t look right.');
       btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Joining…';
+      await Promise.race([countReady, new Promise(r => setTimeout(r, 1500))]);
       const eid = eventId(); const extra = Object.assign({ np_lead_event_id: eid }, metaIds());
       try {
         if (emailMode) { await subscribe({ email }, form.dataset.place + '-email', extra); store.set('np_email', '1'); store.set('np_email_addr', email); }
@@ -461,7 +473,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   document.addEventListener('click', async (ev) => {
     const share = ev.target.closest('.js-share');
     if (share) {
-      const data = { title: 'NO PRESSURE', text: 'K-pop’s worst-kept secret. Get on the list.', url: myLink() };
+      const pos = myPosition();
+      const data = { title: 'NO PRESSURE', text: (pos ? 'I’m #' + pos + ' on the NO PRESSURE list. ' : '') + 'K-pop’s worst-kept secret. Get on the list.', url: myLink() };
       try { if (navigator.share) { await navigator.share(data); return; } await navigator.clipboard.writeText(data.url); share.textContent = 'Link copied'; } catch (e) {}
       return;
     }

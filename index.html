@@ -369,10 +369,15 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     <svg aria-hidden="true"><use href="#x"/></svg>
     <div>
       <h3>You’re on the list.</h3>
-      <p>One text when the doors open. Want it by email too?</p>
+      <p class="js-done-line">One text when the doors open. Want it by email too?</p>
       <form class="form js-email" novalidate>
         <label class="sr" for="em">Email address</label>
         <div class="row"><input name="email" type="email" inputmode="email" autocomplete="email" placeholder="Your email" maxlength="254"><button type="submit" class="mono">Add <span class="arrow" aria-hidden="true">↗</span></button></div>
+      </form>
+      <form class="form js-phone" novalidate>
+        <label class="sr" for="ph">Mobile number</label>
+        <div class="row"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Your number" maxlength="24"><button type="submit" class="mono">Add <span class="arrow" aria-hidden="true">↗</span></button></div>
+        <p class="note consent">By adding your number you agree to receive automated marketing texts from NO PRESSURE at this number. Consent isn’t a condition of purchase. Msg &amp; data rates may apply. Reply STOP to leave, HELP for help. <a href="/privacy.html">Privacy</a></p>
       </form>
       <div class="acts mono">
         <button type="button" class="js-share">Send it to a friend ↗</button>
@@ -384,7 +389,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
 
 <script>
 (() => {
-  // ---- Waitlist: Klaviyo client subscriptions -> list VtUvii (NO PRESSURE — Waitlist). Phone first (SMS consent), email as step two.
+  // ---- Waitlist: Klaviyo client subscriptions -> list VtUvii (NO PRESSURE — Waitlist). The form asks for one identifier first and offers the other as step two.
   const COMPANY = 'XVVLZu', LIST = 'VtUvii';
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const qs = new URLSearchParams(location.search);
@@ -392,6 +397,12 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   ['utm_source','utm_medium','utm_campaign','utm_content','ref'].forEach(k => { if (qs.get(k)) utm['np_' + k] = qs.get(k).slice(0, 100); });
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   const joined = store.get('np_joined') === '1';
+  // A/B (Oct 22 2026): which field the form asks for first. 50/50 per visitor, sticky in localStorage; ?v=email|phone forces one for QA.
+  // Stamped on every join as np_form_variant; a per-variant custom pixel event gives the denominator in Events Manager.
+  const forced = qs.get('v'); let variant = store.get('np_variant');
+  if (forced === 'email' || forced === 'phone') { variant = forced; store.set('np_variant', variant); }
+  if (variant !== 'email' && variant !== 'phone') { variant = Math.random() < 0.5 ? 'email' : 'phone'; store.set('np_variant', variant); }
+  try { window.fbq && fbq('trackCustom', variant === 'email' ? 'NPViewEmailFirst' : 'NPViewPhoneFirst'); } catch (e) {}
 
   function e164(v) {
     const d = (v || '').replace(/\D/g, '');
@@ -410,7 +421,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   }
   function eventId() { try { return crypto.randomUUID(); } catch (e) { return 'np-' + Date.now() + '-' + Math.random().toString(16).slice(2); } }
   async function subscribe(attrs, place, extra) {
-    const profile = Object.assign({ properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname }, utm, extra || {}) }, attrs);
+    const profile = Object.assign({ properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant }, utm, extra || {}) }, attrs);
     const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
       relationships: { list: { data: { type: 'list', id: LIST } } } } };
     const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + COMPANY, {
@@ -436,11 +447,30 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       } catch (e) { btn.disabled = false; btn.innerHTML = label; fail(form, input, 'Couldn’t save that. Try again in a moment.'); }
     });
   }
+  function wirePhone(form) {
+    if (store.get('np_phone')) { const p = document.createElement('p'); p.className = 'added mono'; p.textContent = 'Number added.'; form.replaceWith(p); return; }
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const input = form.querySelector('input[name=phone]'), btn = form.querySelector('.row button');
+      const phone = e164(input.value);
+      if (!phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
+      btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Adding…';
+      const attrs = { phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }; const email = store.get('np_email_addr'); if (email) attrs.email = email;
+      try {
+        await subscribe(attrs, 'phone-step');
+        store.set('np_phone', phone);
+        document.querySelectorAll('.js-phone').forEach(f => { const p = document.createElement('p'); p.className = 'added mono'; p.textContent = 'Number added.'; f.replaceWith(p); });
+      } catch (e) { btn.disabled = false; btn.innerHTML = label; fail(form, input, 'Couldn’t save that. Check the number and try again.'); }
+    });
+  }
   function showDone(form) {
     const node = document.getElementById('done-tpl').content.cloneNode(true);
-    const emailForm = node.querySelector('.js-email');
+    const line = node.querySelector('.js-done-line'), emailForm = node.querySelector('.js-email'), phoneForm = node.querySelector('.js-phone');
+    const gavePhone = !!store.get('np_phone'), gaveEmail = store.get('np_email') === '1';
+    // Step two asks for whichever identifier they did not give. Phone joiners get the email ask (as before); email joiners get the text ask.
+    if (gavePhone || !gaveEmail) { line.textContent = 'One text when the doors open. Want it by email too?'; phoneForm.remove(); wireEmail(emailForm); }
+    else { line.textContent = 'One email when the doors open. Want a text too?'; emailForm.remove(); wirePhone(phoneForm); }
     form.replaceWith(node);
-    wireEmail(emailForm);
   }
   function allDone() { document.querySelectorAll('.js-join').forEach(showDone); document.getElementById('dock')?.remove(); }
 
@@ -453,6 +483,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();
     };
+    if (variant === 'email') setMode('email');
     modeBtn?.addEventListener('click', () => { setMode(modeBtn.dataset.mode); input.focus(); });
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
@@ -467,7 +498,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Joining…';
       const eid = eventId(); const extra = Object.assign({ np_lead_event_id: eid }, metaIds());
       try {
-        if (emailMode) { await subscribe({ email }, form.dataset.place + '-email', extra); store.set('np_email', '1'); }
+        if (emailMode) { await subscribe({ email }, form.dataset.place + '-email', extra); store.set('np_email', '1'); store.set('np_email_addr', email); }
         else { await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place, extra); store.set('np_phone', phone); }
         store.set('np_joined', '1');
         try { window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }, { eventID: eid }); } catch (e) {}

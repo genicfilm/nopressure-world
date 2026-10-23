@@ -399,8 +399,18 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     if (d.length === 11 && d[0] === '1') return '+' + d;
     return null;
   }
-  async function subscribe(attrs, place) {
-    const profile = Object.assign({ properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname }, utm) }, attrs);
+  // Meta attribution: click id + browser id + a per-join event id, stored on the profile so the server-side Conversions API pusher can send the same Lead (deduped by event id).
+  function cookie(n) { try { return (document.cookie.match('(?:^|; )' + n + '=([^;]*)') || [])[1] || null; } catch (e) { return null; } }
+  function metaIds() {
+    const fbclid = qs.get('fbclid'); let fbc = cookie('_fbc');
+    if (!fbc && fbclid) fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+    const o = {}; if (fbc) o.np_fbc = fbc.slice(0, 300); const fbp = cookie('_fbp'); if (fbp) o.np_fbp = fbp; if (fbclid) o.np_fbclid = fbclid.slice(0, 200);
+    try { o.np_ua = navigator.userAgent.slice(0, 300); } catch (e) {}
+    return o;
+  }
+  function eventId() { try { return crypto.randomUUID(); } catch (e) { return 'np-' + Date.now() + '-' + Math.random().toString(16).slice(2); } }
+  async function subscribe(attrs, place, extra) {
+    const profile = Object.assign({ properties: Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname }, utm, extra || {}) }, attrs);
     const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
       relationships: { list: { data: { type: 'list', id: LIST } } } } };
     const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + COMPANY, {
@@ -455,11 +465,12 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       if (!emailMode && !phone) return fail(form, input, 'Enter a US mobile number, like 310 555 0123.');
       if (emailMode && !EMAIL.test(email)) return fail(form, input, 'That email doesn’t look right.');
       btn.disabled = true; const label = btn.innerHTML; btn.textContent = 'Joining…';
+      const eid = eventId(); const extra = Object.assign({ np_lead_event_id: eid }, metaIds());
       try {
-        if (emailMode) { await subscribe({ email }, form.dataset.place + '-email'); store.set('np_email', '1'); }
-        else { await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place); store.set('np_phone', phone); }
+        if (emailMode) { await subscribe({ email }, form.dataset.place + '-email', extra); store.set('np_email', '1'); }
+        else { await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place, extra); store.set('np_phone', phone); }
         store.set('np_joined', '1');
-        try { window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }); } catch (e) {}
+        try { window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }, { eventID: eid }); } catch (e) {}
         allDone();
       } catch (e) {
         btn.disabled = false; btn.innerHTML = label;

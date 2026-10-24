@@ -350,11 +350,10 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     if (listCount === null) return null;
     const n = listCount + 1; store.set('np_position', String(n)); return n;
   }
-  // A/B (Oct 22 2026): which field the form asks for first. 50/50 per visitor, sticky in localStorage; ?v=email|phone forces one for QA.
+  // A/B (Oct 22 2026) collapsed Oct 24 (Ryan GO): phone first won (same joins, 2x phones), so every visitor gets phone first,
+  // including returning email-first visitors. ?v=email still forces the email form for QA. "Prefer email?" stays on the form.
   // Stamped on every join as np_form_variant; a per-variant custom pixel event gives the denominator in Events Manager.
-  const forced = qs.get('v'); let variant = store.get('np_variant');
-  if (forced === 'email' || forced === 'phone') { variant = forced; store.set('np_variant', variant); }
-  if (variant !== 'email' && variant !== 'phone') { variant = Math.random() < 0.5 ? 'email' : 'phone'; store.set('np_variant', variant); }
+  const variant = qs.get('v') === 'email' ? 'email' : 'phone'; store.set('np_variant', variant);
   try { window.fbq && fbq('trackCustom', variant === 'email' ? 'NPViewEmailFirst' : 'NPViewPhoneFirst'); } catch (e) {}
 
   function e164(v) {

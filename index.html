@@ -456,7 +456,10 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();
     };
-    if (INTL) { setMode('email'); if (modeBtn) modeBtn.closest('.note').hidden = true; }
+    if (INTL) {
+      setMode('email'); if (modeBtn) modeBtn.closest('.note').hidden = true;
+      if (consent) { consent.innerHTML = 'Email only. Nothing until we ship to you. Under 18? Ask a parent first. <a href="/privacy.html">Privacy</a>'; consent.hidden = false; }
+    }
     else if (variant === 'email') setMode('email');
     modeBtn?.addEventListener('click', () => { setMode(modeBtn.dataset.mode); input.focus(); });
     form.addEventListener('submit', async (ev) => {

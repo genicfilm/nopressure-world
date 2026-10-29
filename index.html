@@ -324,6 +324,16 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   const COMPANY = 'XVVLZu', LIST = 'VtUvii';
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const qs = new URLSearchParams(location.search);
+  // International (Oct 29 2026, Ryan GO "take everyone's email", no sends for now): a browser time zone outside the US/Canada gets an email-only form that
+  // subscribes to list W5D9DW (no flow, nothing sent), no US position, no Meta Lead. Unknown zone = US form, as before. ?geo=us|intl forces either for QA.
+  const INTL_LIST = 'W5D9DW';
+  let TZ = ''; try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  const NA_TZ = /^(US\/|Canada\/|Pacific\/Honolulu$|America\/(New_York|Detroit|Chicago|Denver|Boise|Phoenix|Los_Angeles|Anchorage|Juneau|Sitka|Metlakatla|Yakutat|Nome|Adak|Menominee|Puerto_Rico|Indiana\/|Kentucky\/|North_Dakota\/|Indianapolis|Fort_Wayne|Louisville|Knox_IN|Shiprock|Atka|Coral_Harbour|Navajo$|Toronto|Montreal|Nipigon|Thunder_Bay|Iqaluit|Pangnirtung|Winnipeg|Rainy_River|Rankin_Inlet|Resolute|Regina|Swift_Current|Edmonton|Cambridge_Bay|Yellowknife|Inuvik|Vancouver|Whitehorse|Dawson|Dawson_Creek|Fort_Nelson|Creston|Halifax|Glace_Bay|Moncton|Goose_Bay|St_Johns|Atikokan|Blanc-Sablon))/;
+  const INTL = qs.get('geo') === 'intl' || (qs.get('geo') !== 'us' && !!TZ && !NA_TZ.test(TZ));
+  const PLACE_BY_TZ = { 'Asia/Kolkata': 'India', 'Asia/Calcutta': 'India', 'Asia/Manila': 'the Philippines', 'Asia/Karachi': 'Pakistan', 'Asia/Dhaka': 'Bangladesh', 'Asia/Colombo': 'Sri Lanka', 'Asia/Kathmandu': 'Nepal',
+    'Asia/Jakarta': 'Indonesia', 'Asia/Kuala_Lumpur': 'Malaysia', 'Asia/Singapore': 'Singapore', 'Asia/Seoul': 'Korea', 'Asia/Tokyo': 'Japan', 'Asia/Dubai': 'the UAE', 'Europe/London': 'the UK', 'Europe/Berlin': 'Germany',
+    'Europe/Paris': 'France', 'America/Mexico_City': 'Mexico', 'America/Sao_Paulo': 'Brazil' };
+  const PLACE = PLACE_BY_TZ[TZ] || (TZ.startsWith('Australia/') ? 'Australia' : '');
   const utm = {};
   ['utm_source','utm_medium','utm_campaign','utm_content','ref'].forEach(k => { if (qs.get(k)) utm['np_' + k] = qs.get(k).slice(0, 100); });
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -346,6 +356,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   let listCount = null;
   const countReady = fetch('/count.json?t=' + Math.floor(Date.now() / 6e4), { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j && Number.isFinite(j.count)) listCount = j.count; }).catch(() => {});
   function myPosition() {
+    if (INTL) return null;
     const p = parseInt(store.get('np_position') || '', 10); if (p > 0) return p;
     if (listCount === null) return null;
     const n = listCount + 1; store.set('np_position', String(n)); return n;
@@ -374,11 +385,11 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   function eventId() { try { return crypto.randomUUID(); } catch (e) { return 'np-' + Date.now() + '-' + Math.random().toString(16).slice(2); } }
   async function subscribe(attrs, place, extra) {
     const pos = myPosition();
-    const props = Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant, np_code: myCode(), np_share_url: myLink() }, pos ? { np_position: pos, np_rank: pos } : {}, utm, extra || {});
+    const props = Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant, np_code: myCode(), np_share_url: myLink(), np_geo: INTL ? 'intl' : 'us', np_tz: TZ.slice(0, 60) }, PLACE ? { np_country_guess: PLACE } : {}, pos ? { np_position: pos, np_rank: pos } : {}, utm, extra || {});
     if (props.np_ref === props.np_code) delete props.np_ref;
     const profile = Object.assign({ properties: props }, attrs);
     const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
-      relationships: { list: { data: { type: 'list', id: LIST } } } } };
+      relationships: { list: { data: { type: 'list', id: INTL ? INTL_LIST : LIST } } } } };
     const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + COMPANY, {
       method: 'POST', headers: { 'Content-Type': 'application/vnd.api+json', 'revision': '2025-07-15' }, body: JSON.stringify(body)
     });
@@ -423,7 +434,12 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     const line = node.querySelector('.js-done-line'), emailForm = node.querySelector('.js-email'), phoneForm = node.querySelector('.js-phone');
     const gavePhone = !!store.get('np_phone'), gaveEmail = store.get('np_email') === '1';
     // Step two asks for whichever identifier they did not give. Phone joiners get the email ask (as before); email joiners get the text ask.
-    if (gavePhone || !gaveEmail) { line.textContent = 'One text when it drops. Email too?'; phoneForm.remove(); wireEmail(emailForm); }
+    if (INTL) {
+      line.textContent = 'We don’t ship to ' + (PLACE || 'you') + ' yet. You’ll be the first to know when we do.';
+      emailForm.remove(); phoneForm.remove();
+      node.querySelector('.js-ref-line').textContent = 'Know someone who’d wear it? Send them the link.';
+    }
+    else if (gavePhone || !gaveEmail) { line.textContent = 'One text when it drops. Email too?'; phoneForm.remove(); wireEmail(emailForm); }
     else { line.textContent = 'One email when it drops. Text too?'; emailForm.remove(); wirePhone(phoneForm); }
     node.querySelector('.js-ref-url').textContent = myLink().replace('https://', '');
     const pos = myPosition(); if (pos) node.querySelector('.js-done-h').textContent = 'You’re #' + pos + '.';
@@ -440,7 +456,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();
     };
-    if (variant === 'email') setMode('email');
+    if (INTL) { setMode('email'); if (modeBtn) modeBtn.closest('.note').hidden = true; }
+    else if (variant === 'email') setMode('email');
     modeBtn?.addEventListener('click', () => { setMode(modeBtn.dataset.mode); input.focus(); });
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
@@ -459,7 +476,8 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
         if (emailMode) { await subscribe({ email }, form.dataset.place + '-email', extra); store.set('np_email', '1'); store.set('np_email_addr', email); }
         else { await subscribe({ phone_number: phone, subscriptions: { sms: { marketing: { consent: 'SUBSCRIBED' } } } }, form.dataset.place, extra); store.set('np_phone', phone); }
         store.set('np_joined', '1');
-        try { window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }, { eventID: eid }); } catch (e) {}
+        // International joins stay out of the US ad pixel's Lead optimisation: a custom event counts them instead.
+        try { if (INTL) window.fbq && fbq('trackCustom', 'NPLeadIntl', { tz: TZ }); else window.fbq && fbq('track', 'Lead', { content_name: emailMode ? 'np_waitlist_email' : 'np_waitlist_phone' }, { eventID: eid }); } catch (e) {}
         allDone();
       } catch (e) {
         btn.disabled = false; btn.innerHTML = label;
@@ -467,6 +485,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       }
     });
   });
+  if (INTL) { const l = document.querySelector('#join .lede'); if (l) l.textContent = 'One email when we ship to you. Nothing else.'; }
   if (joined) allDone();
 
   document.addEventListener('click', async (ev) => {
@@ -478,7 +497,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
       return;
     }
     const f = ev.target.closest('[data-focus]');
-    if (f) { const input = document.querySelector('#join input[name=phone]'); if (input) setTimeout(() => input.focus({ preventScroll: true }), 450); }
+    if (f) { const input = document.querySelector('#join .row input'); if (input) setTimeout(() => input.focus({ preventScroll: true }), 450); }
   });
 
   // ---- Header turns ink over the paper (plate) section

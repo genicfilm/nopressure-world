@@ -321,12 +321,14 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
 <script>
 (() => {
   // ---- Waitlist: Klaviyo client subscriptions -> list VtUvii (NO PRESSURE — Waitlist). The form asks for one identifier first and offers the other as step two.
-  const COMPANY = 'XVVLZu', LIST = 'VtUvii';
+  // Nov 12 2026: NO PRESSURE has its own Klaviyo account (Vzg2pi: US XjNTw9, intl RtkWWG). Every join is written to BOTH accounts until the
+  // new one's text number is approved and its welcome flow is live; GENIC's (XVVLZu) still runs the welcome text, count.json and CAPI meanwhile.
+  // A join counts as saved when either account accepts it. Cut-over = drop the GENIC entry from DEST.
+  const DEST = [{ company: 'XVVLZu', list: 'VtUvii', intl: 'W5D9DW' }, { company: 'Vzg2pi', list: 'XjNTw9', intl: 'RtkWWG' }];
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const qs = new URLSearchParams(location.search);
   // International (Oct 29 2026, Ryan GO "take everyone's email", no sends for now): a browser time zone outside the US/Canada gets an email-only form that
   // subscribes to list W5D9DW (no flow, nothing sent), no US position, no Meta Lead. Unknown zone = US form, as before. ?geo=us|intl forces either for QA.
-  const INTL_LIST = 'W5D9DW';
   let TZ = ''; try { TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
   const NA_TZ = /^(US\/|Canada\/|Pacific\/Honolulu$|America\/(New_York|Detroit|Chicago|Denver|Boise|Phoenix|Los_Angeles|Anchorage|Juneau|Sitka|Metlakatla|Yakutat|Nome|Adak|Menominee|Puerto_Rico|Indiana\/|Kentucky\/|North_Dakota\/|Indianapolis|Fort_Wayne|Louisville|Knox_IN|Shiprock|Atka|Coral_Harbour|Navajo$|Toronto|Montreal|Nipigon|Thunder_Bay|Iqaluit|Pangnirtung|Winnipeg|Rainy_River|Rankin_Inlet|Resolute|Regina|Swift_Current|Edmonton|Cambridge_Bay|Yellowknife|Inuvik|Vancouver|Whitehorse|Dawson|Dawson_Creek|Fort_Nelson|Creston|Halifax|Glace_Bay|Moncton|Goose_Bay|St_Johns|Atikokan|Blanc-Sablon))/;
   const INTL = qs.get('geo') === 'intl' || (qs.get('geo') !== 'us' && !!TZ && !NA_TZ.test(TZ));
@@ -388,12 +390,16 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     const props = Object.assign({ np_waitlist: true, np_signup_place: place, np_signup_page: location.hostname, np_form_variant: variant, np_code: myCode(), np_share_url: myLink(), np_geo: INTL ? 'intl' : 'us', np_tz: TZ.slice(0, 60) }, PLACE ? { np_country_guess: PLACE } : {}, pos ? { np_position: pos, np_rank: pos } : {}, utm, extra || {});
     if (props.np_ref === props.np_code) delete props.np_ref;
     const profile = Object.assign({ properties: props }, attrs);
-    const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
-      relationships: { list: { data: { type: 'list', id: INTL ? INTL_LIST : LIST } } } } };
-    const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + COMPANY, {
-      method: 'POST', headers: { 'Content-Type': 'application/vnd.api+json', 'revision': '2025-07-15' }, body: JSON.stringify(body)
+    const sends = DEST.map(async d => {
+      const body = { data: { type: 'subscription', attributes: { custom_source: 'nopressure.world · ' + place, profile: { data: { type: 'profile', attributes: profile } } },
+        relationships: { list: { data: { type: 'list', id: INTL ? d.intl : d.list } } } } };
+      const r = await fetch('https://a.klaviyo.com/client/subscriptions/?company_id=' + d.company, {
+        method: 'POST', headers: { 'Content-Type': 'application/vnd.api+json', 'revision': '2025-07-15' }, body: JSON.stringify(body)
+      });
+      if (!(r.status === 202 || r.ok)) throw new Error(d.company + ' status ' + r.status);
     });
-    if (!(r.status === 202 || r.ok)) throw new Error('status ' + r.status);
+    const res = await Promise.allSettled(sends);
+    if (!res.some(x => x.status === 'fulfilled')) throw new Error('both accounts failed');
   }
   function fail(form, input, msg) { form.querySelector('.err')?.remove(); const p = document.createElement('p'); p.className = 'err'; p.setAttribute('role', 'alert'); p.textContent = msg; form.append(p); input.setAttribute('aria-invalid', 'true'); input.focus(); }
 

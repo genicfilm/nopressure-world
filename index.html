@@ -452,6 +452,7 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
     const setMode = (m) => {
       form.dataset.mode = m;
       const cta = form.querySelector('.row .cta'); if (cta) cta.textContent = (m === 'email' ? 'Join' : 'Text me');
+      input.maxLength = (m === 'email' ? 254 : 24);
       if (m === 'email') { input.name = 'email'; input.type = 'email'; input.inputMode = 'email'; input.autocomplete = 'email'; input.placeholder = 'Your email'; if (consent) consent.hidden = true; if (modeBtn) { modeBtn.textContent = 'Text me instead ↗'; modeBtn.dataset.mode = 'phone'; } }
       else { input.name = 'phone'; input.type = 'tel'; input.inputMode = 'tel'; input.autocomplete = 'tel'; input.placeholder = 'Your number'; if (consent) consent.hidden = false; if (modeBtn) { modeBtn.textContent = 'Prefer email? ↗'; modeBtn.dataset.mode = 'email'; } }
       input.value = ''; form.querySelector('.err')?.remove();

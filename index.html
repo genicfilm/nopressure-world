@@ -324,7 +324,9 @@ footer div{display:flex;gap:16px 30px;flex-wrap:wrap}
   // Nov 12 2026: NO PRESSURE has its own Klaviyo account (Vzg2pi: US XjNTw9, intl RtkWWG). Every join is written to BOTH accounts until the
   // new one's text number is approved and its welcome flow is live; GENIC's (XVVLZu) still runs the welcome text, count.json and CAPI meanwhile.
   // A join counts as saved when either account accepts it. Cut-over = drop the GENIC entry from DEST.
-  const DEST = [{ company: 'XVVLZu', list: 'VtUvii', intl: 'W5D9DW' }, { company: 'Vzg2pi', list: 'XjNTw9', intl: 'RtkWWG' }];
+  // Nov 16 2026 cut-over: GENIC (XVVLZu) dropped. NO PRESSURE's own account now runs the welcome flow (VDNwp6), count.json,
+  // the Meta Conversions API pusher and referral stamping (genic-pc, key KLAVIYO_NP_API_KEY). Undo = add the GENIC entry back.
+  const DEST = [{ company: 'Vzg2pi', list: 'XjNTw9', intl: 'RtkWWG' }];
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const qs = new URLSearchParams(location.search);
   // International (Oct 29 2026, Ryan GO "take everyone's email", no sends for now): a browser time zone outside the US/Canada gets an email-only form that

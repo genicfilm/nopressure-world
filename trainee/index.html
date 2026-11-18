@@ -1,0 +1,1079 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>NO PRESSURE Trainee Card</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@500;600&display=swap">
+<style>
+/* Layout: one phone column; each stage of training is a full screen that rises in; the character card is the one object with depth. */
+:root{
+  --night:#1a0306;      /* page ground */
+  --ox:#6E0A10;         /* brand oxblood */
+  --paper:#F1EFEC;      /* type, primary button */
+  --ink:#17110F;
+  --live:#7be08f;       /* the "now" dot */
+  --line:rgba(241,239,236,.16);
+  --dim:rgba(241,239,236,.62);
+  --f-head:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--night);color:var(--paper);font-family:var(--f-head);-webkit-font-smoothing:antialiased;overflow:hidden}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.app{position:relative;height:100%;max-width:460px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:radial-gradient(120% 70% at 50% -10%, #5c0b12 0%, #2a0408 55%, var(--night) 100%)}
+@media (min-width:520px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+.top{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:0;height:60px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.top img{height:17px;width:auto;display:block}
+.steps{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--dim);font-variant-numeric:tabular-nums}
+.stage{position:absolute;inset:0;overflow:hidden}
+.scr{position:absolute;inset:0;padding:76px max(16px,env(safe-area-inset-right,0px)) 22px max(16px,env(safe-area-inset-left,0px));
+  display:flex;flex-direction:column;gap:16px;opacity:0;visibility:hidden;transform:translateY(28px) scale(.985);
+  transition:opacity .45s ease, transform .7s var(--ease), visibility 0s .7s;pointer-events:none}
+.scr.on{opacity:1;visibility:visible;transform:none;pointer-events:auto;transition:opacity .5s ease .08s, transform .8s var(--ease) .04s, visibility 0s}
+.scr.off{transform:translateY(-22px) scale(.985)}
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.lab{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+h1,h2{margin:0;font-weight:500;letter-spacing:-.04em;line-height:.94;text-wrap:balance}
+h1{font-size:clamp(46px,13vw,68px)}
+h2{font-size:clamp(36px,10vw,50px)}
+.sub{margin:0;font-size:16px;line-height:1.38;color:var(--dim);max-width:32ch;letter-spacing:-.01em}
+.rise .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.rise .w>i{display:inline-block;font-style:normal;transform:translateY(105%)}
+.on .rise .w>i{animation:rise .8s var(--ease) both;animation-delay:calc(.12s + var(--i,0) * 70ms)}
+@keyframes rise{from{transform:translateY(105%)}to{transform:none}}
+.actions{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+#s-in{overflow-y:auto;-webkit-overflow-scrolling:touch}
+#s-in>*{flex:none}
+@media (max-height:760px){#s-in{gap:10px} #s-in .num{font-size:clamp(60px,17vw,84px)} #s-in .path li{padding:7px 0}}
+.btn{appearance:none;border:0;font:600 17px/1 var(--f-head);letter-spacing:-.01em;height:56px;border-radius:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;text-decoration:none;
+  transition:transform .25s var(--ease), background .25s, opacity .25s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--paper);color:var(--ox)}
+.btn.pri:disabled{opacity:.28;cursor:default;transform:none}
+.btn.ghost{background:transparent;color:var(--paper);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.text{height:40px;background:none;color:var(--dim);font-weight:500;font-size:15px}
+.btn:focus-visible,.field input:focus-visible,.pick:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+.fine{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(241,239,236,.42);text-align:center;line-height:1.6}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+/* join */
+.join-hero{margin-top:auto;display:flex;flex-direction:column;gap:16px}
+.ghostx{position:absolute;right:-70px;top:90px;width:300px;opacity:.06;pointer-events:none}
+.field{display:flex;flex-direction:column;gap:8px}
+.field input{appearance:none;width:100%;height:58px;border-radius:16px;border:0;background:rgba(241,239,236,.08);box-shadow:inset 0 0 0 1px var(--line);
+  color:var(--paper);font:500 19px var(--f-head);padding:0 18px;letter-spacing:-.01em}
+.field input::placeholder{color:rgba(241,239,236,.4)}
+.swap{align-self:flex-start;background:none;border:0;color:var(--dim);font:500 14px var(--f-head);padding:4px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* you're in + training path */
+.num{font-weight:600;letter-spacing:-.06em;line-height:.8;font-size:clamp(84px,25vw,128px);font-variant-numeric:tabular-nums;display:flex;align-items:flex-start;gap:.04em}
+.num small{font-size:.24em;letter-spacing:0;font-weight:500;margin-top:.1em;color:var(--dim)}
+.path{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.path li{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);opacity:0;transform:translateY(8px)}
+.on .path li{animation:item .6s var(--ease) both;animation-delay:calc(.35s + var(--i,0) * 90ms)}
+@keyframes item{to{opacity:1;transform:none}}
+.path .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;color:var(--dim);font-variant-numeric:tabular-nums}
+.path b{display:block;font-weight:500;font-size:17px;letter-spacing:-.02em}
+.path span.d{display:block;font-size:13.5px;color:var(--dim);margin-top:2px;line-height:1.3}
+.path em{font-style:normal;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.path li.now em{color:var(--paper)}
+.path li.now em::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 10px var(--live);animation:pulse 1.6s ease-in-out infinite}
+.path li.done b{color:var(--dim)}
+.path li.done em{color:var(--live)}
+.path li.lock{opacity:.55}
+.on .path li.lock{animation-name:itemdim}
+@keyframes itemdim{to{opacity:.55;transform:none}}
+@keyframes pulse{50%{opacity:.35}}
+.path img.mini{width:34px;height:46px;object-fit:cover;border-radius:6px;display:block}
+
+/* casting */
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pick{appearance:none;border:0;padding:0;background:none;cursor:pointer;color:var(--dim);font:500 12px var(--f-mono);letter-spacing:.1em;display:flex;flex-direction:column;gap:6px;align-items:stretch;text-align:left}
+.pick img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;display:block;box-shadow:inset 0 0 0 1px var(--line);transition:transform .35s var(--ease)}
+.pick:hover img{transform:translateY(-3px)}
+.pick:active img{transform:scale(.96)}
+.note{font-size:13px;color:var(--dim);margin:0;line-height:1.4}
+
+/* styling */
+.styling{display:grid;grid-template-columns:42% 1fr;gap:16px;align-items:start}
+.pol{position:relative;background:#f4f1ec;padding:7px 7px 26px;border-radius:4px;transform:rotate(-3deg);box-shadow:0 18px 30px -12px rgba(0,0,0,.7)}
+.pol img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;border-radius:2px}
+.pol::after{content:"CASTING";position:absolute;left:0;right:0;bottom:7px;text-align:center;font:500 9px var(--f-mono);letter-spacing:.2em;color:#6a5f58}
+.scan{position:absolute;left:7px;right:7px;top:7px;height:2px;background:linear-gradient(90deg,transparent,#ff6a7a,transparent);box-shadow:0 0 14px 2px rgba(255,90,110,.65);opacity:0}
+.reading .scan{opacity:1;animation:scan 1.6s ease-in-out infinite alternate}
+@keyframes scan{from{top:7px}to{top:calc(100% - 28px)}}
+.traits{display:flex;flex-direction:column;min-width:0}
+.trait{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line);opacity:0;transform:translateX(10px);transition:opacity .4s, transform .6s var(--ease)}
+.trait.in{opacity:1;transform:none}
+.trait .lab{font-size:9.5px}
+.trait b{font-weight:500;font-size:15.5px;letter-spacing:-.015em;line-height:1.2}
+.trait.skel b{display:block;height:14px;width:70%;border-radius:4px;background:linear-gradient(90deg,rgba(241,239,236,.08),rgba(241,239,236,.2),rgba(241,239,236,.08));background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.build{display:flex;flex-direction:column;gap:10px;opacity:0;transition:opacity .4s}
+.build.in{opacity:1}
+.bar{height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--paper);transition:width .3s linear}
+.build .lab b{color:var(--paper);font-weight:500}
+
+/* quiz (fills the wait, collects answers) */
+.qtop{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.qh{font-size:clamp(32px,9vw,44px);min-height:2em}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{appearance:none;border:0;text-align:left;min-height:56px;border-radius:16px;background:rgba(241,239,236,.08);box-shadow:inset 0 0 0 1px var(--line);
+  color:var(--paper);font:500 18px/1.2 var(--f-head);letter-spacing:-.01em;padding:14px 18px;cursor:pointer;transition:transform .2s var(--ease), background .2s, color .2s}
+.opt:active{transform:scale(.98)}
+.opt.picked{background:var(--paper);color:var(--ox)}
+.opt:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+.qswap{animation:qin .5s var(--ease) both}
+@keyframes qin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.qswap{animation:none}}
+
+/* age group (before the photo) */
+.ages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.agep{appearance:none;border:0;height:44px;border-radius:12px;background:rgba(241,239,236,.08);box-shadow:inset 0 0 0 1px var(--line);color:var(--paper);font:500 15px var(--f-head);cursor:pointer;transition:background .2s,color .2s}
+.agep[aria-checked=true]{background:var(--paper);color:var(--ox)}
+.agep:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+
+/* reveal */
+.frame{position:relative;width:min(100%, calc((100vh - var(--chrome,360px)) * .647));width:min(100%, calc((100svh - var(--chrome,360px)) * .647));aspect-ratio:55/85;max-width:100%;margin:0 auto;flex:none}
+#s-reveal{--chrome:350px}
+.rv img.blur{animation:breathe 1.6s ease-in-out infinite alternate}
+@keyframes breathe{to{filter:blur(12px) saturate(.6) brightness(.85);transform:scale(1.06)}}#s-card{--chrome:380px}
+#s-card .deck .frame{transform:translateX(-6%)}
+.rv{position:absolute;inset:0;border-radius:22px;overflow:hidden;box-shadow:0 40px 70px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.08);background:#0d0203}
+.rv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.on .rv img.ch{animation:reveal 1.6s var(--ease) both .25s}
+@keyframes reveal{0%{clip-path:inset(100% 0 0 0);filter:brightness(2.2) saturate(0)}55%{filter:brightness(1.3) saturate(.8)}100%{clip-path:inset(0 0 0 0);filter:none}}
+.rv .sweep{position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);background-size:250% 100%;background-position:120% 0;pointer-events:none}
+.on .rv .sweep{animation:sweep 1.4s ease-out 1.5s both}
+@keyframes sweep{to{background-position:-60% 0}}
+.pin{position:absolute;left:-8px;top:6px;width:27%;background:#f4f1ec;padding:4px 4px 14px;border-radius:3px;transform:rotate(-8deg);box-shadow:0 10px 20px -8px rgba(0,0,0,.8);z-index:3}
+.pin img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.pin::after{content:"YOU";position:absolute;left:0;right:0;bottom:3px;text-align:center;font:500 7.5px var(--f-mono);letter-spacing:.2em;color:#6a5f58}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12.5px var(--f-head);padding:6px 10px;border-radius:999px;background:rgba(241,239,236,.08);box-shadow:inset 0 0 0 1px var(--line);color:var(--paper)}
+.own{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:22px;background:linear-gradient(180deg,rgba(26,3,6,.1),rgba(26,3,6,.92))}
+.own p{margin:0;font-size:15px;line-height:1.4}
+.rv img.blur{filter:blur(18px) saturate(.4) brightness(.6);transform:scale(1.1)}
+
+/* name */
+.nm{display:flex;align-items:center;gap:14px}
+.avwrap{position:relative;width:72px;height:72px;flex:none}
+.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:50% 18%;display:block;transition:filter .6s}
+.avatar.wait{filter:blur(5px) saturate(.4) brightness(.8)}
+.ring{position:absolute;left:-6px;top:-6px;width:84px;height:84px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:2.5}
+.ring .bg{stroke:var(--line)}
+.ring .fg{stroke:var(--paper);stroke-dasharray:232.5;stroke-dashoffset:var(--off,232.5);stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+.drawnote{display:flex;align-items:center;gap:8px}
+.drawnote .dot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 10px var(--live);animation:pulse 1.2s ease-in-out infinite;flex:none}
+.drawnote.done .dot{animation:none}
+.bigin{appearance:none;background:none;border:0;border-bottom:1px solid var(--line);color:var(--paper);width:100%;min-width:0;
+  font:500 clamp(40px,12vw,60px)/1.05 var(--f-head);letter-spacing:-.045em;padding:6px 0 12px;caret-color:#ff8a9a}
+.bigin::placeholder{color:rgba(241,239,236,.22)}
+.bigin:focus{outline:none;border-bottom-color:var(--paper)}
+.count{font-family:var(--f-mono);font-size:11px;color:var(--dim);letter-spacing:.12em;text-align:right}
+
+/* card */
+.deck{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.card3d{position:absolute;inset:0;perspective:1200px;z-index:2;transition:transform .8s var(--ease), filter .6s}
+.on .deck .card3d{animation:deal .9s var(--ease) both .15s}
+@keyframes deal{from{transform:translateY(40%) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
+.flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .9s var(--ease);
+  transform:rotateX(var(--rx,0deg)) rotateY(calc(var(--ry,0deg) + var(--fy,0deg)))}
+.flip.live{transition:transform .18s ease-out}
+.face{position:absolute;inset:0;border-radius:22px;overflow:hidden;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(0deg) translateZ(1px);
+  box-shadow:0 40px 70px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.08)}
+.face canvas{width:100%;height:100%;display:block}
+.face.back{transform:rotateY(180deg) translateZ(1px);opacity:0}
+.face.front,.face.back{transition:opacity 0s .22s}
+.flip.flipped .face.front{opacity:0}
+.flip.flipped .face.back{opacity:1}
+.holo{position:absolute;inset:0;pointer-events:none;opacity:.2;
+  background:linear-gradient(115deg, transparent 22%, rgba(255,150,210,.55) 34%, rgba(150,255,240,.5) 44%, rgba(255,250,170,.45) 53%, rgba(200,170,255,.55) 63%, transparent 76%);
+  background-size:260% 260%;background-position:var(--hx,50%) var(--hy,50%);transition:background-position .2s}
+.back .holo{opacity:.16}
+.glare{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--gx,50%) var(--gy,30%), rgba(255,255,255,.16), transparent 50%)}
+.debut{position:absolute;inset:0;transform:translate(16%, -2%) rotate(7deg) scale(.92);transition:transform .8s var(--ease), filter .6s;filter:brightness(.55);cursor:pointer;z-index:0}
+.debut .face{transform:none;box-shadow:0 30px 50px -20px rgba(0,0,0,.8)}
+.debut canvas{filter:blur(9px) saturate(.6)}
+.dlock{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:16px}
+.dlock .pill{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.16em;background:rgba(10,1,2,.65);border:1px solid rgba(255,255,255,.25);padding:6px 9px;border-radius:999px;color:var(--paper)}
+.deck.preview .debut{transform:none;filter:none;z-index:3}
+.deck.preview .debut canvas{filter:none}
+.deck.preview .debut .dlock{display:none}
+.deck.preview .card3d{transform:translate(-14%,2%) rotate(-6deg) scale(.9);filter:brightness(.5)}
+.deck.nudge .debut{animation:nudge .5s var(--ease)}
+@keyframes nudge{40%{transform:translate(19%, -3%) rotate(10deg) scale(.92)}}
+.cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.cap p{margin:0;font-size:13.5px;color:var(--dim);line-height:1.35}
+.toast{position:absolute;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--paper);color:var(--ox);font:600 14px var(--f-head);padding:10px 16px;border-radius:999px;opacity:0;transition:.35s var(--ease);z-index:20;white-space:nowrap}
+.toast.in{opacity:1;transform:translate(-50%,0)}
+
+/* training + inbox */
+.tabs{display:flex;gap:6px;background:rgba(241,239,236,.07);padding:4px;border-radius:12px;flex:none}
+.tabs button{flex:1;appearance:none;border:0;background:none;color:var(--dim);font:500 14px var(--f-head);height:34px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--paper);color:var(--ox)}
+.mail{border-radius:18px;background:#0e0e0f;box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;flex:none}
+.mhead{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center;font-family:-apple-system,"SF Pro Text",var(--f-head)}
+.av{width:36px;height:36px;border-radius:50%;background:var(--ox);display:grid;place-items:center}
+.av img{width:18px}
+.mhead b{display:block;font-size:14px;color:#fff;font-weight:600}
+.mhead span{font-size:13px;color:rgba(255,255,255,.6)}
+.em{background:#4A060A;color:var(--paper);padding:26px 22px 28px;display:flex;flex-direction:column;gap:16px}
+.em .lk{height:15px;width:auto;align-self:flex-start}
+.em h3{margin:4px 0 0;font:500 34px/.98 var(--f-head);letter-spacing:-.04em}
+.em p{margin:0;font-size:15px;line-height:1.45;color:rgba(241,239,236,.82)}
+.em img.cardimg{width:70%;align-self:center;border-radius:12px;box-shadow:0 20px 40px -14px rgba(0,0,0,.7)}
+.em .cta{background:var(--paper);color:#4A060A;font:600 15px var(--f-head);text-align:center;padding:15px;border-radius:12px}
+.em .ft{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;color:rgba(241,239,236,.5);line-height:1.7;text-transform:uppercase;border-top:1px solid rgba(241,239,236,.14);padding-top:14px}
+.sms{padding:20px 14px;display:flex;flex-direction:column;gap:8px;font-family:-apple-system,"SF Pro Text",var(--f-head)}
+.sms .meta{font-size:11px;color:rgba(255,255,255,.45);text-align:center}
+.bub{align-self:flex-start;max-width:82%;background:#2a2a2d;color:#fff;font-size:15px;line-height:1.35;padding:9px 13px;border-radius:18px 18px 18px 6px}
+.bub u{color:#7fb2ff;text-decoration:none}
+/* public mode (waitlist people on nopressure.world): no join form, no samples, no training plan */
+.pub #f-join,.pub #samples,.pub #b-samp,.pub #codebox,.pub [data-skip],.pub #b-plan{display:none!important}
+.actions.pubgate{display:none}
+.pub .actions.pubgate{display:flex}
+.consent{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.consent label{display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:14px;line-height:1.4;color:var(--paper);letter-spacing:-.005em}
+.consent input{width:24px;height:24px;margin:0;flex:none;accent-color:var(--paper);cursor:pointer}
+.consent input:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+.consent a{align-self:flex-start;margin-left:36px;color:var(--dim);font-size:13px;text-underline-offset:3px}
+.consent a:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .scr,.scr.on{transition:opacity .2s}
+  .scr,.scr.off{transform:none}
+  .on .rise .w>i,.rise .w>i{animation:none;transform:none}
+  .on .path li,.path li{animation:none;opacity:1;transform:none}
+  .on .rv img.ch,.on .rv .sweep,.on .deck .card3d,.reading .scan{animation:none}
+  .flip{transition:none}
+}
+</style>
+
+<script>
+// MODE-START: team test (admin.genic.film) or public (nopressure.world; localhost with ?mode=public for tests)
+const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
+const URLQ = new URLSearchParams(location.search);          // NOT "QS": that name is the question list
+const PUBLIC = /(^|\.)nopressure\.world$/.test(location.hostname) || (LOCAL && URLQ.get('mode') === 'public');
+const API_ORIGIN = !PUBLIC ? '' : (LOCAL ? (URLQ.get('api') || '') : 'https://admin.genic.film');
+const API = API_ORIGIN + '/trainee/api/';
+// MODE-END
+if (PUBLIC) document.documentElement.classList.add('pub');
+</script>
+<div class="app" id="app">
+  <div class="top"><img src="/trainee/a/lockup.png" alt="NO PRESSURE"><span class="steps" id="steps"></span></div>
+  <div class="stage">
+
+    <!-- JOIN -->
+    <section class="scr on" id="s-join" aria-label="Join the list">
+      <img class="ghostx" src="/trainee/a/x.png" alt="">
+      <div class="join-hero">
+        <span class="lab">Ear acupressure patches</span>
+        <h1 class="rise"><span class="w"><i style="--i:0">The urge</i></span> <span class="w"><i style="--i:1">to press.</i></span></h1>
+        <p class="sub">They look like a piercing. No needle, no hole. The list shops first.</p>
+      </div>
+      <form class="actions" id="f-join" novalidate>
+        <div class="field">
+          <label class="lab" for="contact" id="contact-lab">Your number</label>
+          <input id="contact" name="contact" type="tel" inputmode="tel" autocomplete="tel" placeholder="(213) 555-0148" maxlength="254">
+          <button type="button" class="swap" id="swap">Prefer email?</button>
+        </div>
+        <button class="btn pri" type="submit">Join the list</button>
+        <div class="fine">Team test · your number is not saved</div>
+      </form>
+      <div class="actions pubgate" id="pubgate">
+        <p class="note" id="pubnote" aria-live="polite">Checking your link…</p>
+        <a class="btn pri" id="pubjoin" href="https://nopressure.world/#join" hidden>Join the list first</a>
+        <button type="button" class="btn ghost" id="pubretry" hidden>Try again</button>
+      </div>
+    </section>
+
+    <!-- YOU'RE IN: the training path -->
+    <section class="scr" id="s-in" aria-label="Your training">
+      <span class="lab">You're in</span>
+      <div class="num" aria-live="polite"><small>ID</small><span id="numv">····</span></div>
+      <h2 class="rise"><span class="w"><i style="--i:0">Your training</i></span> <span class="w"><i style="--i:1">starts now.</i></span></h2>
+      <ol class="path" aria-label="Training stages">
+        <li class="now" style="--i:0"><span class="k">01</span><div><b>Casting</b><span class="d">One photo of you</span></div><em>Now</em></li>
+        <li style="--i:1"><span class="k">02</span><div><b>Styling</b><span class="d">We read your look</span></div><em></em></li>
+        <li style="--i:2"><span class="k">03</span><div><b>Your character</b><span class="d">You, as a NO PRESSURE doll. Ready in seconds.</span></div><em></em></li>
+        <li style="--i:3"><span class="k">04</span><div><b>Training</b><span class="d">Short lessons in your inbox</span></div><em></em></li>
+        <li class="lock" style="--i:4"><span class="k">05</span><div><b>Debut</b><span class="d">When you buy, your character wears the X</span></div><em>Locked</em></li>
+      </ol>
+      <div class="actions">
+        <button class="btn pri" data-go="cast">Start casting</button>
+        <button class="btn text" data-go="train" data-skip="1">Later</button>
+      </div>
+    </section>
+
+    <!-- 01 CASTING -->
+    <section class="scr" id="s-cast" aria-label="Casting">
+      <span class="lab">Stage 1 · Casting</span>
+      <h2 class="rise"><span class="w"><i style="--i:0">Casting photo.</i></span></h2>
+      <p class="sub">Face the camera, good light. We build your character from it.</p>
+      <div class="samples" id="samples" hidden>
+        <div class="lab" style="margin-bottom:10px">Sample castings</div>
+        <div class="picks">
+          <button class="pick" data-pick="a"><img src="/trainee/a/face-a.jpg" alt="Sample casting A">A</button>
+          <button class="pick" data-pick="b"><img src="/trainee/a/face-b.jpg" alt="Sample casting B">B</button>
+          <button class="pick" data-pick="c"><img src="/trainee/a/face-c.jpg" alt="Sample casting C">C</button>
+        </div>
+      </div>
+      <div class="actions">
+        <div><div class="lab" style="margin-bottom:8px">Your age group</div>
+          <div class="ages" role="radiogroup" aria-label="Your age group">
+            <button type="button" class="agep" role="radio" aria-checked="false" data-age="Under 18">Under 18</button>
+            <button type="button" class="agep" role="radio" aria-checked="false" data-age="18-24">18–24</button>
+            <button type="button" class="agep" role="radio" aria-checked="false" data-age="25-34">25–34</button>
+            <button type="button" class="agep" role="radio" aria-checked="false" data-age="35+">35+</button>
+          </div>
+          <div class="consent" id="consent" hidden>
+            <label for="ok18"><input type="checkbox" id="ok18"><span>I'm 18 or older and this is a photo of me. NO PRESSURE can use it to draw my character.</span></label>
+            <a href="/privacy.html#photos" target="_blank" rel="noopener">How photos are handled</a>
+          </div></div>
+        <div class="row">
+          <label class="btn ghost" for="fcam">Take a photo</label>
+          <label class="btn ghost" for="fup">Upload</label>
+        </div>
+        <div class="field" id="codebox"><label class="lab" for="tcode">Team code</label><input id="tcode" autocomplete="off" autocapitalize="characters" placeholder="From Ryan" maxlength="20"></div>
+        <button type="button" class="swap" id="b-samp" aria-expanded="false" aria-controls="samples">Or try a sample casting</button>
+        <p class="note" id="castnote">Your photo is used to draw your character, then dropped within 10 minutes. It is never saved.</p>
+        <input type="file" id="fcam" accept="image/*" capture="user">
+        <input type="file" id="fup" accept="image/*">
+      </div>
+    </section>
+
+    <!-- 02 STYLING -->
+    <section class="scr" id="s-style" aria-label="Styling">
+      <span class="lab">Stage 2 · Styling</span>
+      <h2 class="rise"><span class="w"><i style="--i:0">Reading</i></span> <span class="w"><i style="--i:1">your look.</i></span></h2>
+      <div class="styling" id="styling">
+        <div class="pol"><img id="polimg" alt="Your casting photo"><span class="scan"></span></div>
+        <div class="traits" id="traits" aria-live="polite"></div>
+      </div>
+      <p class="note" id="stylenote" hidden></p>
+      <div class="actions" id="styleact" hidden><button class="btn ghost" data-go="cast">Back to casting</button></div>
+    </section>
+
+    <!-- WHILE WE DRAW: quick questions -->
+    <section class="scr" id="s-quiz" aria-label="Quick questions while we draw you">
+      <div class="qtop"><span class="lab" id="qcount">While we draw you</span><span class="lab" id="qpct">0%</span></div>
+      <div class="bar"><i id="qbar"></i></div>
+      <h2 class="qh" id="qh" aria-live="polite"></h2>
+      <div class="opts" id="qopts"></div>
+      <div class="actions"><button class="btn text" id="qskip">Skip this one</button></div>
+    </section>
+
+    <!-- 03 REVEAL -->
+    <section class="scr" id="s-reveal" aria-label="Your character">
+      <span class="lab">Stage 3 · Your character</span>
+      <h2 class="rise" id="rvh"><span class="w"><i style="--i:0">Meet your</i></span> <span class="w"><i style="--i:1">character.</i></span></h2>
+      <div class="frame">
+        <div class="pin"><img id="pinimg" alt="Your casting photo"></div>
+        <div class="rv" id="rv"><img class="ch" id="chimg" alt="Your character"><div class="sweep"></div></div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="build in" id="rvbuild" hidden><div class="lab">Finishing <b>your character</b></div><div class="bar"><i id="rvbar"></i></div></div>
+      <div class="actions"><button class="btn pri" id="b-toname">Print my trainee card</button><button class="btn text" id="b-redo" hidden>Different look</button></div>
+    </section>
+
+    <!-- 03 NAME -->
+    <section class="scr" id="s-name" aria-label="Stage name">
+      <span class="lab">Stage 3 · Your character</span>
+      <h2 class="rise"><span class="w"><i style="--i:0">Stage name?</i></span></h2>
+      <div class="nm">
+        <div class="avwrap"><img class="avatar wait" id="avimg" alt=""><svg class="ring" viewBox="0 0 80 80" aria-hidden="true"><circle class="bg" cx="40" cy="40" r="37"/><circle class="fg" id="ringfg" cx="40" cy="40" r="37"/></svg></div>
+        <div style="flex:1;min-width:0">
+          <label for="name" class="lab" style="position:absolute;left:-9999px">Stage name</label>
+          <input class="bigin" id="name" autocomplete="nickname" maxlength="12" placeholder="Name" enterkeyhint="done">
+          <div class="count" id="ncount">0 / 12</div>
+        </div>
+      </div>
+      <p class="sub">Your name or a new one. It goes on your trainee card.</p>
+      <p class="note drawnote" id="drawnote"><span class="dot"></span><span id="drawtxt">Drawing your character…</span></p>
+      <div class="actions"><button class="btn pri" id="b-name" disabled>Meet my character</button></div>
+    </section>
+
+    <!-- CARD -->
+    <section class="scr" id="s-card" aria-label="Your trainee card">
+      <div class="cap"><span class="lab" id="cardlab">Trainee ID</span><span class="lab">Tap to flip</span></div>
+      <div class="deck" id="deck">
+        <div class="frame">
+          <div class="debut" id="debut" role="button" tabindex="0" aria-label="Debut card, locked. Tap to see it.">
+            <div class="face"><canvas id="cdebut" width="1100" height="1700"></canvas><div class="holo"></div></div>
+            <div class="dlock"><span class="pill">DEBUT · WHEN YOU BUY</span></div>
+          </div>
+          <div class="card3d" id="card3d" role="button" tabindex="0" aria-label="Your trainee card. Tap to flip.">
+            <div class="flip" id="flip">
+              <div class="face front"><canvas id="cfront" width="1100" height="1700"></canvas><div class="holo"></div><div class="glare"></div></div>
+              <div class="face back"><canvas id="cback" width="1100" height="1700"></canvas><div class="holo"></div><div class="glare"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cap"><p id="debutnote">Behind it: your debut card. Tap it.</p></div>
+      <div class="actions">
+        <button class="btn pri" data-go="train" id="b-plan">See my training plan</button>
+        <button class="btn ghost" id="b-save">Save my card</button>
+        <button class="btn ghost" id="b-share" hidden>Send to a friend</button>
+      </div>
+      <div class="toast" id="toast"></div>
+    </section>
+
+    <!-- 04 TRAINING -->
+    <section class="scr scroll" id="s-train" aria-label="Your training plan">
+      <span class="lab">Stage 4 · Training</span>
+      <h2 class="rise"><span class="w"><i style="--i:0">Your training</i></span> <span class="w"><i style="--i:1">plan.</i></span></h2>
+      <ol class="path" id="plan" aria-label="Training plan">
+        <li class="done" style="--i:0"><span class="k">TODAY</span><div><b>Welcome to training</b><span class="d">Your trainee card, in your inbox</span></div><em>Sent</em></li>
+        <li style="--i:1"><span class="k">DAY 2</span><div><b>Lesson 1: The press</b><span class="d">Where the patch goes. 30 seconds.</span></div><em>Email</em></li>
+        <li style="--i:2"><span class="k">DAY 5</span><div><b>Lesson 2: Pick your spot</b><span class="d">One tap, right in the email.</span></div><em>Email</em></li>
+        <li style="--i:3"><span class="k">DAY 9</span><div><b>Lesson 3: Group photo</b><span class="d">Your character joins the lineup. Bring a friend.</span></div><em>Text</em></li>
+        <li class="lock" style="--i:4"><span class="k">DROP</span><div><b>Debut</b><span class="d">Your first box. Your character wears the X.</span></div><em id="planlock">Locked</em></li>
+      </ol>
+      <div class="lab" style="margin-top:6px">Today's message</div>
+      <div class="tabs" role="tablist"><button role="tab" aria-selected="true" id="t-email">Email</button><button role="tab" aria-selected="false" id="t-text">Text</button></div>
+      <div class="mail" id="mail">
+        <div id="v-email">
+          <div class="mhead"><div class="av"><img src="/trainee/a/x.png" alt=""></div><div><b>NO PRESSURE</b><span id="subj"></span></div></div>
+          <div class="em">
+            <img class="lk" src="/trainee/a/lockup.png" alt="NO PRESSURE">
+            <h3 id="emh"></h3>
+            <img class="cardimg" id="emcard" alt="Your trainee card">
+            <p id="emp"></p>
+            <div class="cta" id="emcta">See my trainee card</div>
+            <div class="ft">Ear acupressure patches that look like a piercing<br>No needle · no hole · no pressure.</div>
+          </div>
+        </div>
+        <div id="v-text" hidden>
+          <div class="sms"><div class="meta">Text Message · Today</div>
+            <div class="bub" id="smsb"></div>
+            <div class="bub">Reply STOP to opt out.</div>
+          </div>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:6px;padding-bottom:8px"><button class="btn ghost" id="b-restart">Start over</button></div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const CW = 1100, CH = 1700;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const vib = ms => { try { if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return; navigator.vibrate && navigator.vibrate(ms) } catch(e){} };   // no buzz before the first tap (public opens without one)
+  const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) } return h >>> 0 };
+  const today = new Date(), p2 = n => String(n).padStart(2, '0');
+  const DATE = `${p2(today.getMonth() + 1)}.${p2(today.getDate())}.${String(today.getFullYear()).slice(2)}`;
+  const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 120) : ms));
+
+  // The three sample castings and the characters made from them (Higgsfield, Nov 17).
+  const CAST = {
+    a: { face: '/trainee/a/face-a.jpg', char: '/trainee/a/char-a.jpg', debut: '/trainee/a/debut-a.jpg',
+         traits: [['Hair', 'Black, slicked back'], ['Brows', 'Straight and dark'], ['Eyes', 'Calm, low lid'], ['Skin', 'Warm, freckled'], ['Wearing', 'Oxblood vinyl coat'], ['Energy', 'Unbothered']] },
+    b: { face: '/trainee/a/face-b.jpg', char: '/trainee/a/char-b.jpg', debut: null,
+         traits: [['Hair', 'Platinum pixie, wet look'], ['Brows', 'Light and thin'], ['Eyes', 'Grey-green, heavy lid'], ['Skin', 'Pale, cool'], ['Wearing', 'Oxblood coat, collar open'], ['Energy', 'A little trouble']] },
+    r: { face: '/trainee/a/face-r.jpg', char: '/trainee/a/char-r.jpg', debut: null,
+         traits: [['Hair', 'Black, swept back'], ['Brows', 'Dark, neat'], ['Eyes', 'Dark, narrow, gazing sideways'], ['Skin', 'Light, even-toned'], ['Wearing', 'Black washed denim jacket'], ['Energy', 'Cool, relaxed']] },
+    c: { face: '/trainee/a/face-c.jpg', char: '/trainee/a/char-c.jpg', debut: null,
+         traits: [['Hair', 'Long braids, swept back'], ['Brows', 'Arched'], ['Eyes', 'Half-closed, relaxed'], ['Skin', 'Deep brown, warm glow'], ['Wearing', 'Oxblood coat, collar up'], ['Energy', 'Self-possessed']] }
+  };
+  const S = { mode: 'tel', contact: '', tid: 'K7QX', pick: null, ownURL: null, ownFile: null, traits: [], name: '', skipped: false };
+  // Trainee ID: a code, never a count (MJ, Nov 17: no numbers until the list passes 250). No I/O/M/W/0/1.
+  const IDL = 'ACDEFHJKLNPRTXY', IDD = '3456789';
+  const makeId = s => { const h = hash(s); return IDL[h % 15] + IDD[(h >>> 4) % 7] + IDL[(h >>> 8) % 15] + IDL[(h >>> 16) % 15]; };
+  const numStr = () => S.tid;
+
+  const load = src => new Promise((res, rej) => {
+    const i = new Image(); i.onload = () => res(i); i.onerror = rej;
+    try { if (/^https?:/i.test(src) && new URL(src).origin !== location.origin) i.crossOrigin = 'anonymous'; } catch (e) {}   // else the card canvas is tainted
+    i.src = src;
+  });
+  const A = {};
+  const base = load('/trainee/a/lockup.png').then(l => { A.lockup = l; }).catch(() => {});
+  const fontsReady = (document.fonts ? Promise.all([
+    document.fonts.load('600 100px "Inter Tight"'), document.fonts.load('500 100px "Inter Tight"'),
+    document.fonts.load('500 30px "IBM Plex Mono"')]) : Promise.resolve()).catch(() => {});
+
+  // ---------- navigation
+  const STEP = { cast: '01 / 05', style: '02 / 05', quiz: '02 / 05', name: '03 / 05', reveal: '03 / 05', card: '03 / 05', train: '04 / 05' };
+  let cur = 'join';
+  const enter = {};
+  function go(id){
+    if (id === cur || (PUBLIC && id === 'train')) return;   // public: no training plan screen
+    const a = $('#s-' + cur), b = $('#s-' + id);
+    a.classList.remove('on'); a.classList.add('off'); setTimeout(() => a.classList.remove('off'), 750);
+    b.classList.add('on'); cur = id;
+    $('#steps').textContent = STEP[id] || '';
+    if (enter[id]) enter[id]();
+  }
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-go]'); if (!t) return;
+    if (t.dataset.skip) S.skipped = true;
+    go(t.dataset.go);
+  });
+
+  // ---------- join
+  $('#swap').addEventListener('click', () => {
+    const inp = $('#contact'), tel = S.mode !== 'tel';
+    S.mode = tel ? 'tel' : 'email';
+    inp.type = tel ? 'tel' : 'email'; inp.inputMode = tel ? 'tel' : 'email'; inp.autocomplete = tel ? 'tel' : 'email';
+    inp.placeholder = tel ? '(213) 555-0148' : 'you@email.com';
+    $('#contact-lab').textContent = tel ? 'Your number' : 'Your email';
+    $('#swap').textContent = tel ? 'Prefer email?' : 'Use my number';
+    inp.value = ''; inp.focus();
+  });
+  $('#f-join').addEventListener('submit', e => {
+    e.preventDefault();
+    S.contact = $('#contact').value.trim();
+    S.tid = makeId((S.contact || '') + Date.now());
+    vib(12); go('in');
+  });
+  const PUBL = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  enter.in = () => {
+    const el = $('#numv'), target = S.tid, t0 = performance.now(), dur = reduce ? 0 : 1200;
+    let last = 0;
+    if (PUBLIC) {   // the ID is the person's code (4-12 characters): scale it down to fit the screen
+      const box = el.parentElement; box.style.fontSize = ''; el.textContent = target;
+      if (box.scrollWidth > box.clientWidth) box.style.fontSize = (parseFloat(getComputedStyle(box).fontSize) * box.clientWidth / box.scrollWidth * .9).toFixed(1) + 'px';
+    }
+    const tick = t => {   // each character shuffles, then locks in, left to right
+      const p = dur ? Math.min(1, (t - t0) / dur) : 1;
+      if (p >= 1 || t - last > 55) { last = t;
+        el.textContent = [...target].map((c, i) => p >= (i + 1) / target.length ? c : PUBLIC ? PUBL[Math.floor(Math.random() * PUBL.length)] : (i === 1 ? IDD : IDL)[Math.floor(Math.random() * (i === 1 ? 7 : 15))]).join(''); }
+      if (p < 1) requestAnimationFrame(tick); else vib([8, 40, 8]);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  // ---------- casting
+  // The live version starts drawing the moment the photo lands. 20 s copies GPT Image medium as measured through Higgsfield on Nov 17 (15-30 s); the sample characters themselves are pre-made.
+  const DRAW_MS = 20000;
+  const drawLeft = () => Math.max(0, DRAW_MS - (performance.now() - (S.drawAt || 0)));
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => { if (PUBLIC) return; S.pick = b.dataset.pick; S.drawAt = performance.now(); vib(10); go('style'); }));
+  $('#b-samp').addEventListener('click', () => {
+    if (PUBLIC) return;
+    const box = $('#samples'), open = box.hidden; box.hidden = !open; vib(6);
+    $('#b-samp').setAttribute('aria-expanded', String(open)); $('#b-samp').textContent = open ? 'Hide sample castings' : 'Or try a sample casting';
+  });
+  const TEAM = { code: '' };
+  const DEV = (() => {
+    let d = ''; try { d = localStorage.getItem('np_dev') || ''; } catch (e) {}
+    if (!/^[0-9a-f]{16,32}$/.test(d)) {
+      const a = new Uint8Array(12); crypto.getRandomValues(a); d = [...a].map(x => x.toString(16).padStart(2, '0')).join('');
+      try { localStorage.setItem('np_dev', d); } catch (e) {}
+    }
+    return d;
+  })();
+  if (!PUBLIC) {   // team code: never read or written in public mode (on nopressure.world np_code is the referral code)
+    try { TEAM.code = new URLSearchParams(location.search).get('code') || localStorage.getItem('np_code') || ''; } catch (e) {}
+    if (TEAM.code) { try { localStorage.setItem('np_code', TEAM.code); } catch (e) {} $('#codebox').hidden = true; $('#tcode').value = TEAM.code; }
+    $('#tcode').addEventListener('input', e => { TEAM.code = e.target.value.trim(); try { localStorage.setItem('np_code', TEAM.code); } catch (_) {} });
+  }
+  // Public: the person's private link token (?t=, then remembered). Never the public referral code.
+  const T_URL = PUBLIC ? (URLQ.get('t') || '').trim().toLowerCase() : '';
+  const T = (() => {
+    if (!PUBLIC) return '';
+    if (/^[a-z0-9]{20}$/.test(T_URL)) return T_URL;
+    let t = ''; try { t = (localStorage.getItem('np_t') || '').trim().toLowerCase(); } catch (e) {}
+    return /^[a-z0-9]{20}$/.test(t) ? t : '';
+  })();
+  const TXT = { 'Content-Type': 'text/plain;charset=UTF-8' };   // public POSTs: a "simple" cross-origin request, no preflight
+  function ev(name, v){   // public step log: never blocks or breaks the flow
+    if (!PUBLIC || !T) return;
+    try { fetch(API + 'ev', { method: 'POST', keepalive: true, headers: TXT, body: JSON.stringify(v === undefined ? { t: T, dev: DEV, ev: name } : { t: T, dev: DEV, ev: name, v }) }).catch(() => {}); } catch (e) {}
+  }
+  const ERR = { code: 'That team code is not right. Ask Ryan for it.', cap: "Today's test limit is reached. Try again tomorrow.",
+    limit: "You've made your 3 characters. That's the limit for now.", age: 'Photo characters are for 18 and up. Try a sample casting instead.', device: 'Something is off with this browser. Refresh the page and try again.',
+    paused: 'The test is paused right now.', no_face: 'We could not find one clear face. Try a straight-on photo in good light.',
+    photo: 'That file did not open. Try a JPG or PNG photo.', too_big: 'That photo is too big. Try another one.',
+    failed: 'Something went wrong drawing it. Try again, or try another photo.',
+    refused: 'We could not draw that photo. Try a different one, just your face and shoulders.',
+    lost: 'Your drawing got interrupted on our side. Sorry. Try your photo again.',
+    slow: 'This is taking much longer than it should. Try again in a minute.',
+    no_redo: 'Your photo is already gone (we drop it after 10 minutes). Start a new casting for another look.' };
+  if (PUBLIC) Object.assign(ERR, { token: 'This link did not work. Open the link in your NO PRESSURE text or email again.',
+    consent: 'Tick the box first.', cap: "Today's limit is reached. Come back tomorrow.", paused: 'Casting is closed right now. Come back soon.',
+    age: "Photo characters are for 18 and up. You're still on the list." });
+  const msg = e => ERR[(e && e.code) || 'failed'] || ERR.failed;
+  async function shrink(file){
+    const url = URL.createObjectURL(file); const img = await load(url);
+    const s = Math.min(1, 1024 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return { url, data: c.toDataURL('image/jpeg', .86) };
+  }
+  async function api(path, body, keepalive){
+    const r = await fetch(API + path, PUBLIC
+      ? { method: 'POST', headers: TXT, keepalive: !!keepalive, body: JSON.stringify(Object.assign({ t: T, dev: DEV }, body)) }
+      : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ code: TEAM.code, dev: DEV }, body)) });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw { code: j.error || 'failed' }; return j;
+  }
+  let pollId = 0;
+  function poll(){   // follows the current job until it is done or fails; sets CAST.own.char when the doll is ready
+    const id = ++pollId;
+    (async () => {
+      for (;;) {
+        if (id !== pollId || !S.job) return;
+        try {
+          const r = await fetch(API + 'job/' + S.job, { cache: 'no-store' });
+          if (id !== pollId) return;
+          if (r.status === 404) { S.err = { code: 'lost' }; return; }
+          const j = await r.json();
+          S.jobState = j;
+          if (j.state === 'error') { S.err = { code: j.error || 'failed' }; return; }
+          if (j.state === 'done') { CAST.own.char = API_ORIGIN + j.img; S.canRedo = j.can_redo; return; }
+        } catch (e) {}
+        if (performance.now() - S.drawAt > 170000) { S.err = { code: 'slow' }; return; }
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    })();
+  }
+  async function own(input){
+    const f = input.files && input.files[0]; input.value = ''; if (!f) return;
+    if (PUBLIC) { if (!gateOK()) { photoGate(); return; } }
+    else if (!TEAM.code) { $('#codebox').hidden = false; $('#tcode').focus(); $('#castnote').textContent = 'Type the team code first, then pick your photo again.'; return; }
+    let shrunk; try { shrunk = await shrink(f); } catch (e) { $('#castnote').textContent = ERR.photo; return; }
+    if (S.ownURL) URL.revokeObjectURL(S.ownURL);
+    S.pick = 'own'; S.job = null; S.jobState = null; S.err = null; S.canRedo = false; S.ownURL = shrunk.url;
+    CAST.own = { face: shrunk.url, char: null, debut: null, traits: [] };
+    S.drawAt = performance.now(); vib(10);
+    S.casting = api('cast', Object.assign({ photo: shrunk.data, age: S.age }, PUBLIC && $('#ok18').checked ? { consent: true } : {}))
+      .then(j => { S.job = j.id; if (PUBLIC) { if (typeof j.left === 'number') LEFT = j.left; ev('photo'); } poll(); return j.id; }).catch(e => { S.err = e; throw e; });
+    S.casting.catch(() => {});
+    go('style');
+  }
+  $('#fcam').addEventListener('change', e => own(e.target));
+  $('#fup').addEventListener('change', e => own(e.target));
+  S.age = ''; let LEFT = null;
+  const gateOK = () => !!S.age && S.age !== 'Under 18' && LEFT !== 0 && (!PUBLIC || $('#ok18').checked);
+  function photoGate(){   // photo buttons work only with an 18+ age group and characters left (public: and the box ticked)
+    if (PUBLIC) {
+      const ok = gateOK();
+      document.querySelectorAll('label[for=fcam],label[for=fup]').forEach(l => { l.style.opacity = ok ? 1 : .3; l.style.pointerEvents = ok ? '' : 'none'; l.setAttribute('aria-disabled', String(!ok)); });
+      $('#fcam').disabled = $('#fup').disabled = !ok;
+      $('#castnote').textContent = LEFT === 0 ? ERR.limit
+        : S.age === 'Under 18' ? "Photo characters are for 18 and up. You're still on the list."
+        : !S.age ? 'Pick your age group to use your own photo.'
+        : !$('#ok18').checked ? 'Tick the box to use your photo.'
+        : `You can make ${LEFT === null ? 3 : LEFT} characters. We delete your photo from our server within 10 minutes.`;
+      return;
+    }
+    const ok = !!S.age && S.age !== 'Under 18' && LEFT !== 0;
+    document.querySelectorAll('label[for=fcam],label[for=fup]').forEach(l => { l.style.opacity = ok ? 1 : .3; l.style.pointerEvents = ok ? '' : 'none'; });
+    $('#castnote').textContent = LEFT === 0 ? ERR.limit + ' You can still try the sample castings.'
+      : S.age === 'Under 18' ? ERR.age
+      : !S.age ? 'Pick your age group to use your own photo.'
+      : `You can make ${LEFT === null ? 3 : LEFT} characters. Your photo is used to draw your character, then dropped within 10 minutes.`;
+  }
+  document.querySelectorAll('.agep').forEach(b => b.addEventListener('click', () => {
+    S.age = b.dataset.age; vib(6);
+    document.querySelectorAll('.agep').forEach(x => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
+    photoGate();
+    if (S.age === 'Under 18') ev('under18'); else ev('age', S.age);
+  }));
+  $('#ok18').addEventListener('change', photoGate);
+  enter.cast = async () => {
+    $('#samples').hidden = true; $('#b-samp').setAttribute('aria-expanded', 'false'); $('#b-samp').textContent = 'Or try a sample casting';
+    photoGate();
+    if (PUBLIC) { try { const r = await whoCall(); if (r.ok && typeof r.j.left === 'number') LEFT = r.j.left; } catch (e) {} photoGate(); return; }
+    try { const r = await fetch('/trainee/api/left/' + DEV, { cache: 'no-store' }); const j = await r.json(); LEFT = j.left; } catch (e) {}
+    photoGate();
+  };
+  const OWN_MS = 32000;
+  const isReady = () => S.pick === 'own' ? !!(CAST.own && CAST.own.char) : drawLeft() <= 0;
+  const progress = () => S.pick === 'own' ? (CAST.own && CAST.own.char ? 1 : Math.min(.95, (performance.now() - S.drawAt) / OWN_MS)) : 1 - drawLeft() / DRAW_MS;
+  async function ownTraits(){
+    await S.casting;
+    for (;;) {
+      if (S.err) throw S.err;
+      const j = S.jobState;
+      if (j && j.state !== 'reading') {
+        const t = j.traits || {};
+        return [['Hair', t.hair], ['Brows', t.brows], ['Eyes', t.eyes || t.eye_colour], ['Skin', t.skin], ['Wearing', t.wearing], ['Energy', t.energy]].filter(x => x[1]);
+      }
+      await new Promise(r => setTimeout(r, 300));
+    }
+  }
+
+  let runId = 0;
+  enter.style = async () => {
+    const id = ++runId, isOwn = S.pick === 'own';
+    $('#polimg').src = isOwn ? S.ownURL : CAST[S.pick].face;
+    $('#styling').classList.add('reading');
+    $('#stylenote').hidden = true; $('#styleact').hidden = true;
+    const box = $('#traits'); box.innerHTML = '';
+    const labels = ['Hair', 'Brows', 'Eyes', 'Skin', 'Wearing', 'Energy'];
+    const rows = labels.map(l => { const d = document.createElement('div'); d.className = 'trait skel'; d.innerHTML = `<span class="lab">${l}</span><b></b>`; box.appendChild(d); return d; });
+    rows.forEach((r, i) => setTimeout(() => r.classList.add('in'), 90 * i));
+    let traits;
+    if (isOwn) {
+      try { traits = await ownTraits(); }
+      catch (e) {
+        if (id !== runId) return;
+        $('#styling').classList.remove('reading');
+        $('#stylenote').textContent = msg(e);
+        $('#stylenote').hidden = false; $('#styleact').hidden = false; return;
+      }
+    } else {
+      await wait(900); traits = CAST[S.pick].traits;
+    }
+    if (id !== runId) return;
+    S.traits = traits;
+    for (let i = 0; i < rows.length; i++) {
+      const t = traits.find(x => x[0] === labels[i]);
+      rows[i].classList.remove('skel'); rows[i].querySelector('b').textContent = t ? t[1] : '—';
+      vib(4); await wait(isOwn ? 200 : 480); if (id !== runId) return;
+    }
+    $('#styling').classList.remove('reading');
+    await wait(700); if (id !== runId) return;
+    go('quiz');
+  };
+
+  // ---------- reveal
+  let rvId = 0;
+  enter.reveal = async () => {
+    const id = ++rvId, c = CAST[S.pick], img = $('#chimg');
+    $('#pinimg').src = c.face; $('#rv').querySelectorAll('.own').forEach(n => n.remove());
+    $('#rvh').innerHTML = `<span class="w"><i style="--i:0">Meet</i></span> <span class="w"><i style="--i:1">${esc(S.name)}.</i></span>`;
+    const chips = $('#chips'); chips.innerHTML = '';
+    (S.traits || []).filter(t => ['Hair', 'Skin', 'Wearing'].includes(t[0])).forEach(t => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = t[1]; chips.appendChild(s); });
+    $('#b-toname').hidden = false; $('#b-redo').hidden = true;
+    if (!isReady()) {
+      img.className = 'blur'; img.src = c.face; $('#rvbuild').hidden = false; $('#b-toname').disabled = true;
+      while (!isReady()) {
+        if (S.pick === 'own' && S.err) {
+          $('#rvbuild').hidden = true;
+          const o = document.createElement('div'); o.className = 'own';
+          o.innerHTML = `<span class="lab">Not this time</span><p>${esc(msg(S.err))}</p><button class="btn pri" data-go="cast">Back to casting</button>`;
+          $('#rv').appendChild(o); return;
+        }
+        $('#rvbar').style.width = (100 * progress()) + '%'; await wait(150); if (id !== rvId) return;
+      }
+      $('#rvbar').style.width = '100%';
+    }
+    $('#rvbuild').hidden = true; $('#b-toname').disabled = false;
+    if (PUBLIC && S.pick === 'own') img.crossOrigin = 'anonymous'; else img.removeAttribute('crossorigin');
+    img.className = 'ch'; img.src = CAST[S.pick].char; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = '';
+    if (S.pick === 'own' && S.canRedo) $('#b-redo').hidden = false;
+    vib([8, 30, 8]); ev('reveal');
+  };
+  $('#b-redo').addEventListener('click', async () => {
+    $('#b-redo').hidden = true;
+    try { const j = await api('redo', { id: S.job }); S.job = j.id; S.err = null; S.canRedo = false; CAST.own.char = null; S.drawAt = performance.now(); poll(); enter.reveal(); }
+    catch (e) { const n = document.createElement('p'); n.className = 'note'; n.textContent = msg(e); $('#chips').innerHTML = ''; $('#chips').appendChild(n); }
+  });
+  $('#b-toname').addEventListener('click', async () => { $('#b-toname').disabled = true; await renderAll(); $('#b-toname').disabled = false; go('card'); });
+
+  // ---------- while we draw: four quick taps (the answers are logged with the job, nothing else)
+  const QS = [
+    { k: 'found', q: 'How did you hear about us?', o: ['TikTok', 'Instagram', 'A friend told me', 'MJ (@likemjkim)', 'Somewhere else'] },
+    { k: 'piercings', q: 'Do you have any ear piercings?', o: ['Yes, a few', 'Just one or two', "None. I don't want holes", 'None yet'] },
+    { k: 'curious', q: 'What made you curious?', o: ['It looks like a piercing', 'No needle, no hole', 'Ear acupressure', 'Just looking around'] },
+    { k: 'shop', q: 'Where do you usually buy beauty stuff?', o: ['Sephora', 'Ulta', 'Olive Young', 'Amazon', 'TikTok Shop', 'Somewhere else'] },
+    { k: 'vibe', q: 'Pick a vibe for your character.', o: ['Main character', 'Quiet one', 'Chaos', 'The leader'] },
+  ];
+  S.answers = {};
+  let qi = 0, qId = 0;
+  enter.quiz = () => {
+    qi = 0; S.answers = {}; showQ();
+    const id = ++qId;
+    (async () => {
+      while (cur === 'quiz' && id === qId) {
+        const p = Math.round(100 * Math.max(0, Math.min(1, progress())));
+        $('#qbar').style.width = p + '%'; $('#qpct').textContent = isReady() ? 'Ready' : (S.pick === 'own' && S.err) ? 'Drawing stopped' : `Drawing · ${p}%`;
+        await wait(200);
+      }
+    })();
+  };
+  function showQ(){
+    const q = QS[qi];
+    $('#qcount').textContent = `Quick question ${qi + 1} of ${QS.length}`;
+    const h = $('#qh'); h.textContent = q.q; h.classList.remove('qswap'); void h.offsetWidth; h.classList.add('qswap');
+    const box = $('#qopts'); box.innerHTML = '';
+    q.o.forEach((o, i) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt qswap'; b.style.animationDelay = (50 * i) + 'ms'; b.textContent = o;
+      b.addEventListener('click', () => { if (box.dataset.lock) return; box.dataset.lock = '1'; S.answers[q.k] = o; if (PUBLIC) saveAnswer(q.k, o); b.classList.add('picked'); vib(8); setTimeout(() => { delete box.dataset.lock; nextQ(); }, 260); });
+      box.appendChild(b);
+    });
+  }
+  function saveAnswer(k, v){   // public: every tap is saved at once (retried once), whatever the drawing is doing
+    const send = () => api('answers', { answers: { [k]: v } }, true);
+    send().catch(() => new Promise(r => setTimeout(r, 2000)).then(send)).catch(() => {});
+  }
+  function nextQ(){
+    qi++;
+    if (qi < QS.length) return showQ();
+    if (PUBLIC) { api('answers', { answers: Object.assign({ age: S.age }, S.answers) }, true).catch(() => {}); ev('quiz'); }
+    else if (S.pick === 'own' && S.job) api('answers', { id: S.job, answers: Object.assign({ age: S.age }, S.answers) }).catch(() => {});
+    go('name');
+  }
+  $('#qskip').addEventListener('click', nextQ);
+
+  // ---------- name
+  const nameIn = $('#name');
+  let nmId = 0;
+  enter.name = async () => {
+    const id = ++nmId, c = CAST[S.pick], av = $('#avimg'), fg = $('#ringfg');
+    av.src = c.face; av.classList.add('wait'); $('#drawnote').classList.remove('done'); $('#drawtxt').textContent = 'Drawing your character…';
+    setTimeout(() => nameIn.focus({ preventScroll: true }), 450);
+    while (!isReady()) {
+      if (S.pick === 'own' && S.err) { $('#drawtxt').textContent = msg(S.err); return; }
+      fg.style.setProperty('--off', (232.5 * (1 - progress())).toFixed(1)); await wait(150); if (id !== nmId) return;
+    }
+    fg.style.setProperty('--off', '0'); vib(10); $('#drawnote').classList.add('done');
+    av.src = CAST[S.pick].char; av.classList.remove('wait'); $('#drawtxt').textContent = 'Your character is ready.';
+  };
+  nameIn.addEventListener('input', () => { $('#ncount').textContent = `${nameIn.value.length} / 12`; $('#b-name').disabled = !nameIn.value.trim(); });
+  nameIn.addEventListener('keydown', e => { if (e.key === 'Enter' && nameIn.value.trim()) $('#b-name').click(); });
+  $('#b-name').addEventListener('click', () => { S.name = nameIn.value.trim(); ev('name', S.name); go('reveal'); });
+
+  // ---------- canvas cards
+  function rr(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function spaced(ctx, text, x, y, sp, align = 'left'){
+    const ch = [...text]; let w = 0; ch.forEach(c => w += ctx.measureText(c).width + sp); w -= sp;
+    let cx = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+    ctx.textAlign = 'left'; ch.forEach(c => { ctx.fillText(c, cx, y); cx += ctx.measureText(c).width + sp; });
+  }
+  function fit(ctx, text, weight, max, min, width){
+    let s = max; do { ctx.font = `${weight} ${s}px "Inter Tight","Helvetica Neue",Arial,sans-serif`; s -= 4; } while (ctx.measureText(text).width > width && s > min); return s + 4;
+  }
+  function cover(ctx, img, x, y, w, h, fy = .15){
+    const s = Math.max(w / img.width, h / img.height), dw = img.width * s, dh = img.height * s;
+    ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) * fy, dw, dh);
+  }
+  function edge(ctx){ rr(ctx, 1.5, 1.5, CW - 3, CH - 3, 46); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.stroke(); }
+  function grain(ctx, a){
+    const t = document.createElement('canvas'); t.width = t.height = 256; const g = t.getContext('2d'), d = g.createImageData(256, 256);
+    for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+    g.putImageData(d, 0, 0); ctx.save(); ctx.globalAlpha = a; ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = ctx.createPattern(t, 'repeat'); ctx.fillRect(0, 0, CW, CH); ctx.restore();
+  }
+  const MONO = '"IBM Plex Mono", Menlo, monospace';
+  function photoCard(cv, img, tag, line){
+    const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, CW, CH);
+    ctx.save(); rr(ctx, 0, 0, CW, CH, 48); ctx.clip();
+    ctx.fillStyle = '#2a0408'; ctx.fillRect(0, 0, CW, CH);
+    if (img) cover(ctx, img, 0, 0, CW, CH);
+    let g = ctx.createLinearGradient(0, 0, 0, CH * .16); g.addColorStop(0, 'rgba(20,2,4,.38)'); g.addColorStop(1, 'rgba(20,2,4,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH * .16);
+    g = ctx.createLinearGradient(0, CH * .58, 0, CH); g.addColorStop(0, 'rgba(26,3,6,0)'); g.addColorStop(1, 'rgba(26,3,6,.88)'); ctx.fillStyle = g; ctx.fillRect(0, CH * .58, CW, CH * .42);
+    if (A.lockup) ctx.drawImage(A.lockup, 70, 70, 290, 290 * A.lockup.height / A.lockup.width);
+    ctx.fillStyle = 'rgba(246,243,239,.92)'; ctx.font = `500 30px ${MONO}`; spaced(ctx, tag, CW - 70, 100, 6, 'right');
+    const nm = S.name || 'Trainee';
+    fit(ctx, nm, 600, 210, 90, CW - 140); ctx.fillStyle = '#F6F3EF'; ctx.textAlign = 'left'; ctx.fillText(nm, 66, CH - 196);
+    ctx.font = `500 32px ${MONO}`; ctx.fillStyle = 'rgba(246,243,239,.8)'; spaced(ctx, line, 72, CH - 112, 3);
+    ctx.restore(); edge(ctx);
+  }
+  function backCard(cv){
+    const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, CW, CH);
+    ctx.save(); rr(ctx, 0, 0, CW, CH, 48); ctx.clip();
+    const g = ctx.createRadialGradient(CW * .5, CH * .3, 40, CW * .5, CH * .45, CH * .8);
+    g.addColorStop(0, '#93151e'); g.addColorStop(.45, '#5a070d'); g.addColorStop(1, '#250306'); ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+    grain(ctx, .16);
+    if (A.lockup) ctx.drawImage(A.lockup, 70, 70, 290, 290 * A.lockup.height / A.lockup.width);
+    ctx.fillStyle = 'rgba(246,243,239,.85)'; ctx.font = `500 30px ${MONO}`; spaced(ctx, 'TRAINEE CARD', CW - 70, 100, 6, 'right');
+    if (A.char) {   // the character, small, beside the number
+      const x = CW - 320, y = 200, w = 250, h = 340;
+      ctx.save(); rr(ctx, x, y, w, h, 26); ctx.clip(); cover(ctx, A.char, x, y, w, h, .05); ctx.restore();
+      rr(ctx, x, y, w, h, 26); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(246,243,239,.6)'; ctx.font = `500 30px ${MONO}`; spaced(ctx, 'TRAINEE ID', 70, 300, 6);
+    ctx.fillStyle = '#F6F3EF';
+    if (PUBLIC) fit(ctx, numStr(), 600, 230, 90, 690);   // a longer ID never touches the small character picture
+    else ctx.font = '600 230px "Inter Tight","Helvetica Neue",Arial,sans-serif';
+    ctx.textAlign = 'left'; ctx.fillText(numStr(), 54, 520);
+    ctx.fillStyle = 'rgba(246,243,239,.22)'; ctx.fillRect(70, 620, CW - 140, 2);
+    const T = k => ((S.traits || []).find(t => t[0] === k) || [0, '—'])[1];
+    const rows = [['STAGE NAME', S.name || 'Trainee'], ['LOOK', T('Hair')], ['VIBE', (S.answers && S.answers.vibe) || T('Energy')], ['JOINED', DATE], ['TRAINING', 'Week 1'], ['DEBUT', 'When the first box ships']];
+    rows.forEach(([k, v], i) => {
+      const y = 712 + i * 118;
+      ctx.fillStyle = 'rgba(246,243,239,.58)'; ctx.font = `500 26px ${MONO}`; spaced(ctx, k, 70, y, 5);
+      ctx.fillStyle = '#F6F3EF'; fit(ctx, v, 500, 54, 30, CW - 460); ctx.textAlign = 'left'; ctx.fillText(v, 390, y + 6);
+      ctx.fillStyle = 'rgba(246,243,239,.12)'; ctx.fillRect(70, y + 46, CW - 140, 2);
+    });
+    ctx.fillStyle = 'rgba(246,243,239,.85)'; ctx.font = '500 36px "Inter Tight","Helvetica Neue",Arial,sans-serif';
+    ctx.fillText('Ear acupressure patches that', 70, 1490); ctx.fillText('look like a piercing.', 70, 1536);
+    ctx.fillStyle = 'rgba(246,243,239,.62)'; ctx.font = `500 26px ${MONO}`; spaced(ctx, 'NOPRESSURE.WORLD', 70, 1620, 4);
+    const ds = String(hash(numStr()) % 10000).padStart(4, '0') + String(hash(S.name || 'x') % 10000).padStart(4, '0');
+    [...ds].forEach((d, i) => { const h = 18 + (+d) * 5.5; ctx.fillStyle = i < 4 ? 'rgba(246,243,239,.85)' : 'rgba(246,243,239,.45)'; ctx.fillRect(CW - 70 - (8 - i) * 30, 1628 - h, 14, h); });
+    ctx.restore(); edge(ctx);
+  }
+  async function renderAll(){
+    await Promise.all([base, fontsReady]);
+    const c = CAST[S.pick];
+    const pending = !c.char;
+    A.char = pending ? await load(c.face).then(soft).catch(() => null) : await load(c.char).catch(() => null);
+    A.debut = c.debut ? await load(c.debut).catch(() => null) : null;
+    photoCard($('#cfront'), A.char, 'TRAINEE', `ID ${numStr()}   ·   JOINED ${DATE}`);
+    if (pending) stamp($('#cfront'), 'YOUR DOLL', 'is drawn here on the live site');
+    backCard($('#cback'));
+    photoCard($('#cdebut'), A.debut || A.char, 'DEBUT', `ID ${numStr()}   ·   NO NEEDLE, NO HOLE`);
+  }
+  function soft(img){   // a heavy blur that works in every browser: shrink, then let the card scale it back up
+    const t = document.createElement('canvas'); t.width = 36; t.height = Math.round(36 * img.height / img.width);
+    t.getContext('2d').drawImage(img, 0, 0, t.width, t.height); return t;
+  }
+  function stamp(cv, a, b){
+    const ctx = cv.getContext('2d'); ctx.save(); ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(246,243,239,.95)'; ctx.font = `500 34px ${MONO}`; spaced(ctx, a, CW / 2, CH * .42, 8, 'center');
+    ctx.font = '500 52px "Inter Tight","Helvetica Neue",Arial,sans-serif'; ctx.textAlign = 'center'; ctx.fillText(b, CW / 2, CH * .42 + 84);
+    ctx.restore();
+  }
+
+  // ---------- card interactions
+  const c3 = $('#card3d'), flip = $('#flip'), deck = $('#deck');
+  let flipped = false, moved = false, downAt = null;
+  enter.card = () => {
+    $('#cardlab').textContent = `Trainee ID ${numStr()}`;
+    flipped = false; flip.classList.remove('flipped'); flip.style.setProperty('--fy', '0deg'); deck.classList.remove('preview');
+    $('#debutnote').textContent = 'Behind it: your debut card. Tap it.';
+    ev('card');
+  };
+  function tilt(e){
+    if (reduce) return;
+    const r = c3.getBoundingClientRect();
+    const px = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), py = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+    flip.style.setProperty('--ry', ((px - .5) * 18) + 'deg'); flip.style.setProperty('--rx', ((.5 - py) * 14) + 'deg');
+    c3.querySelectorAll('.holo').forEach(h => { h.style.setProperty('--hx', (px * 100) + '%'); h.style.setProperty('--hy', (py * 100) + '%'); });
+    c3.querySelectorAll('.glare').forEach(h => { h.style.setProperty('--gx', (px * 100) + '%'); h.style.setProperty('--gy', (py * 100) + '%'); });
+  }
+  c3.addEventListener('pointerdown', e => { downAt = { x: e.clientX, y: e.clientY }; moved = false; });
+  c3.addEventListener('pointermove', e => { if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 8) moved = true; flip.classList.add('live'); tilt(e); });
+  c3.addEventListener('pointerleave', () => { flip.classList.remove('live'); flip.style.setProperty('--rx', '0deg'); flip.style.setProperty('--ry', '0deg'); });
+  const doFlip = () => {
+    if (deck.classList.contains('preview')) { deck.classList.remove('preview'); $('#debutnote').textContent = 'Behind it: your debut card. Tap it.'; return; }
+    flipped = !flipped; flip.classList.toggle('flipped', flipped); flip.style.setProperty('--fy', flipped ? '180deg' : '0deg'); vib(10);
+  };
+  c3.addEventListener('pointerup', () => { flip.classList.remove('live'); if (!moved) doFlip(); downAt = null; });
+  c3.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doFlip(); } });
+  const dTap = () => {
+    vib(10);
+    if (CAST[S.pick] && CAST[S.pick].debut) {
+      const on = deck.classList.toggle('preview');
+      $('#debutnote').textContent = on ? 'Your debut card: same character, now wearing the X. It unlocks when you buy.' : 'Behind it: your debut card. Tap it.';
+    } else {
+      deck.classList.remove('nudge'); void deck.offsetWidth; deck.classList.add('nudge');
+      $('#debutnote').textContent = 'Locked. When you buy, your character gets redrawn wearing the X.';
+    }
+  };
+  $('#debut').addEventListener('click', dTap);
+  $('#debut').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dTap(); } });
+
+  let dl = null; (async () => { try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (e) { dl = null; } })();
+  function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('in'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('in'), 2200); }
+  $('#b-save').addEventListener('click', async () => {
+    const cv = flipped ? $('#cback') : $('#cfront');
+    const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+    const fname = `NO-PRESSURE-trainee-${numStr()}${flipped ? '-back' : ''}.png`;
+    if (!blob) { toast('Could not make the image'); return; }
+    try {
+      if (dl) { const r = await dl.save({ filename: fname, data: blob }); if (r && r.status === 'saved') { toast('Saved'); ev('save'); } return; }
+      const file = new File([blob], fname, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'My NO PRESSURE trainee card' }); ev('save'); return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; a.click(); toast('Saved'); ev('save');
+    } catch (err) { if (err && (err.code === 'declined' || err.name === 'AbortError')) return; toast('Saving is off in this view'); }
+  });
+
+  // public: "Send to a friend" shares the person's own referral link
+  $('#b-share').addEventListener('click', async () => {
+    const url = 'https://nopressure.world/?ref=' + S.ref;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'NO PRESSURE', text: 'I just became a NO PRESSURE trainee. Get on the list.', url }); ev('share'); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }   // a cancelled share is silent; anything else falls back to copying
+    }
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; }
+    catch (e) {
+      try { const ta = document.createElement('textarea'); ta.value = url; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:0;top:0;opacity:0';
+        document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (_) {}
+    }
+    if (ok) { toast('Link copied'); ev('share'); } else toast('Could not copy the link');
+  });
+
+  // ---------- training plan + today's message
+  enter.train = () => {
+    const n = numStr(), nm = S.name, made = !!nm;
+    $('#plan').children[0].querySelector('.d').textContent = made ? 'Your trainee card, in your inbox' : 'Your trainee ID, in your inbox';
+    if (made && CAST[S.pick] && CAST[S.pick].debut) $('#planlock').innerHTML = `<img class="mini" src="${CAST[S.pick].debut}" alt="">`;
+    else $('#planlock').textContent = 'Locked';
+    if (made) {
+      $('#subj').textContent = `Meet ${nm}. Trainee ID ${n}.`;
+      $('#emh').textContent = `Meet ${nm}.`;
+      const t = document.createElement('canvas'); t.width = 550; t.height = 850; t.getContext('2d').drawImage($('#cfront'), 0, 0, 550, 850);
+      $('#emcard').src = t.toDataURL('image/jpeg', .9); $('#emcard').hidden = false;
+      $('#emp').textContent = `Trainee ID ${n}. Training starts tomorrow with one short lesson. You debut when the first box drops.`;
+      $('#emcta').textContent = 'See my trainee card';
+      $('#smsb').innerHTML = `NO PRESSURE: Meet ${nm.replace(/[<>&]/g, '')}, trainee ID ${n}. Your card: <u>nopressure.world/t</u> First lesson tomorrow.`;
+    } else {
+      $('#subj').textContent = `You're in. Trainee ID ${n}.`;
+      $('#emh').textContent = `You're in.`;
+      $('#emcard').hidden = true;
+      $('#emp').textContent = 'Your character is waiting. One photo, 30 seconds, and you get your trainee card.';
+      $('#emcta').textContent = 'Make my character';
+      $('#smsb').innerHTML = `NO PRESSURE: You're in. Trainee ID ${n}. Make your character: <u>nopressure.world/t</u>`;
+    }
+    $('#s-train').scrollTop = 0;
+  };
+  const tab = w => {
+    $('#t-email').setAttribute('aria-selected', w === 'email'); $('#t-text').setAttribute('aria-selected', w === 'text');
+    $('#v-email').hidden = w !== 'email'; $('#v-text').hidden = w !== 'text';
+  };
+  $('#t-email').addEventListener('click', () => tab('email')); $('#t-text').addEventListener('click', () => tab('text'));
+  $('#b-restart').addEventListener('click', () => {
+    Object.assign(S, { contact: '', pick: null, ownURL: null, ownFile: null, traits: [], name: '', skipped: false });
+    $('#contact').value = ''; nameIn.value = ''; $('#ncount').textContent = '0 / 12'; $('#b-name').disabled = true;
+    tab('email'); go('join');
+  });
+
+  // ---------- public start-up: the link token is the person; nothing is asked again
+  async function whoCall(){
+    const r = await fetch(API + 'who', { method: 'POST', headers: TXT, cache: 'no-store', body: JSON.stringify({ t: T, dev: DEV }) });
+    const j = await r.json().catch(() => ({})); return { ok: r.ok, status: r.status, j };
+  }
+  function gate(kind){   // join = no token; token = the link did not work; closed = paused / anything else
+    $('#pubnote').textContent = kind === 'closed' ? ERR.paused : kind === 'token' ? ERR.token : 'Already joined? Open the link in your NO PRESSURE text or email.';
+    $('#pubjoin').hidden = kind === 'closed'; $('#pubretry').hidden = kind !== 'closed';
+  }
+  async function checkLink(){
+    $('#pubnote').textContent = 'Checking your link…'; $('#pubjoin').hidden = true; $('#pubretry').hidden = true;
+    if (!T) return gate(T_URL ? 'token' : 'join');
+    let res = null;
+    for (let i = 0; i <= 3; i++) {   // retries: 3, 3 s apart, on a network error or 403 token
+      if (i) await new Promise(r => setTimeout(r, 3000));
+      try { res = await whoCall(); } catch (e) { res = null; continue; }
+      if (res.ok || !(res.status === 403 && res.j.error === 'token')) break;
+    }
+    if (res && res.ok && res.j.id) {
+      S.tid = String(res.j.id); S.ref = String(res.j.ref || ''); LEFT = typeof res.j.left === 'number' ? res.j.left : null;
+      if (T_URL) {
+        let kept = T_URL !== T;   // a broken ?t= beside a good remembered one: nothing to keep
+        if (T_URL === T) { try { localStorage.setItem('np_t', T); kept = localStorage.getItem('np_t') === T; } catch (e) {} }
+        // only then drop it from the address bar: if storage is blocked (some in-app browsers), a reload still works
+        if (kept) { try { const u = new URL(location.href); u.searchParams.delete('t'); history.replaceState(history.state, '', u.pathname + u.search + u.hash); } catch (e) {} }
+      }
+      go('in'); return;
+    }
+    gate(res && res.status === 403 && res.j.error === 'token' ? 'token' : 'closed');
+  }
+  if (PUBLIC) {
+    $('#s-in .path li:nth-child(4) .d').textContent = "Coming soon. We'll message you.";
+    $('#consent').hidden = false;
+    $('#b-save').className = 'btn pri'; $('#b-share').hidden = false;
+    $('#pubretry').addEventListener('click', checkLink);
+    checkLink();
+  }
+})();
+</script>
+
+</body></html>

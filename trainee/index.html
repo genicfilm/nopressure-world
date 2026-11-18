@@ -195,6 +195,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .face{position:absolute;inset:0;border-radius:22px;overflow:hidden;isolation:isolate;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(0deg) translateZ(1px);
   box-shadow:0 40px 70px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.08)}
 .face canvas{width:100%;height:100%;display:block}
+.cordc{position:absolute;left:0;top:-16.4706%;width:100%;height:22.3529%;pointer-events:none;transform:translateZ(2px);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 62%);mask-image:linear-gradient(to bottom,transparent 0,#000 62%)}
 .face.back{transform:rotateY(180deg) translateZ(1px);opacity:0}
 .face.front,.face.back{transition:opacity 0s .22s}
 .flip.flipped .face.front{opacity:0}
@@ -203,6 +204,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
   background:linear-gradient(115deg, transparent 22%, rgba(255,150,210,.55) 34%, rgba(150,255,240,.5) 44%, rgba(255,250,170,.45) 53%, rgba(200,170,255,.55) 63%, transparent 76%);
   background-size:260% 260%;background-position:var(--hx,50%) var(--hy,50%);transition:background-position .2s}
 .back .holo{opacity:.16}
+.front .holo{opacity:.1}   /* the pass is red metal: keep the red, only a hint of foil */
 .glare{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--gx,50%) var(--gy,30%), rgba(255,255,255,.16), transparent 50%)}
 .debut{position:absolute;inset:0;transform:translate(16%, -2%) rotate(7deg) scale(.92);transition:transform .8s var(--ease), filter .6s;filter:brightness(.55);cursor:pointer;z-index:0}
 .debut .face{transform:none;box-shadow:0 30px 50px -20px rgba(0,0,0,.8)}
@@ -433,6 +435,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
             <div class="flip" id="flip">
               <div class="face front"><canvas id="cfront" width="1100" height="1700"></canvas><div class="holo"></div><div class="glare"></div></div>
               <div class="face back"><canvas id="cback" width="1100" height="1700"></canvas><div class="holo"></div><div class="glare"></div></div>
+              <canvas class="cordc" id="ccord" width="1100" height="380" aria-hidden="true"></canvas>
             </div>
           </div>
         </div>
@@ -828,7 +831,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     const box = $('#qopts'); box.innerHTML = '';
     q.o.forEach((o, i) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'opt qswap'; b.style.animationDelay = (50 * i) + 'ms'; b.textContent = q === AGEQ ? o.replace('-', '–') : o;
-      b.addEventListener('click', () => { if (box.dataset.lock) return; box.dataset.lock = '1'; if (q === AGEQ) setAge(o); else { S.answers[q.k] = o; if (PUBLIC) saveAnswer(q.k, o); } b.classList.add('picked'); vib(8); setTimeout(() => { delete box.dataset.lock; nextQ(); }, 260); });
+      b.addEventListener('click', () => { if (box.dataset.lock) return; box.dataset.lock = '1'; if (q === AGEQ) setAge(o); else { S.answers[q.k] = o; if (q.k === 'vibe') { try { localStorage.setItem('np_vibe', o); } catch (e) {} } if (PUBLIC) saveAnswer(q.k, o); } b.classList.add('picked'); vib(8); setTimeout(() => { delete box.dataset.lock; nextQ(); }, 260); });
       box.appendChild(b);
     });
   }
@@ -902,19 +905,75 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     g.putImageData(d, 0, 0); ctx.save(); ctx.globalAlpha = a; ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = ctx.createPattern(t, 'repeat'); ctx.fillRect(0, 0, CW, CH); ctx.restore();
   }
   const MONO = '"IBM Plex Mono", Menlo, monospace';
-  function photoCard(cv, img, tag, line){
-    const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, CW, CH);
+  // ---------- the trainee pass (front + debut): NO PRESSURE's own ID card. Ryan, Nov 18: red and metal, clean, and
+  // "the ratio of the head and the sizing ... everyone has to be exactly the same" -> ONE fixed photo window for every doll.
+  const lin = (ctx, x0, y0, x1, y1, stops) => { const g = ctx.createLinearGradient(x0, y0, x1, y1); stops.forEach(([q, c]) => g.addColorStop(q, c)); return g; };
+  const CHROME = [[0, '#ffffff'], [.2, '#dfe2e6'], [.46, '#8d929a'], [.52, '#565a61'], [.6, '#b4b8bf'], [.82, '#f4f5f6'], [1, '#a2a6ad']];
+  const SILVER = [[0, '#ffffff'], [.48, '#e6e8ec'], [.56, '#b4b8bf'], [1, '#f3f4f6']];   // brighter chrome for small marks
+  const ENAMEL = [[0, '#e4434f'], [.3, '#b81a27'], [.52, '#6d0a12'], [.62, '#a31520'], [1, '#d3323e']];
+  const PASS = {
+    red:   { body: [[0, '#45060b'], [.27, '#96111b'], [.44, '#c6242f'], [.6, '#860e17'], [1, '#30050a']], brush: .05, ink: '#F6F3EF', soft: 'rgba(246,243,239,.64)', rule: 'rgba(246,243,239,.34)', metal: CHROME, mark: SILVER, pillInk: '#4a060a', slot: '#0f0203' },
+    steel: { body: [[0, '#f6f7f8'], [.25, '#c4c8cd'], [.45, '#eceef0'], [.65, '#a9adb4'], [1, '#d9dbdf']], brush: .09, ink: '#1B1416', soft: 'rgba(27,20,22,.62)', rule: 'rgba(27,20,22,.3)', metal: ENAMEL, mark: ENAMEL, pillInk: '#F6F3EF', slot: '#1a0306' },
+  };
+  function spacedW(ctx, text, sp){ let w = 0; [...text].forEach(c => w += ctx.measureText(c).width + sp); return w - sp; }
+  function fitF(ctx, text, weight, max, min, width, fam){ let z = max; for (;;) { ctx.font = `${weight} ${z}px ${fam}`; if (ctx.measureText(text).width <= width || z <= min) return z; z -= 2; } }
+  function brushed(ctx, a){   // fine horizontal grain: reads as brushed metal (fixed seed: every pass has the same grain)
+    let z = 7; const rnd = () => (z = (Math.imul(z, 1664525) + 1013904223) >>> 0) / 4294967296;
+    for (let y = 0; y < CH; y++) { const v = rnd(); ctx.fillStyle = v > .5 ? `rgba(255,255,255,${(v - .5) * 2 * a})` : `rgba(0,0,0,${(.5 - v) * 2 * a})`; ctx.fillRect(0, y, CW, 1); }
+  }
+  function tintG(img, stops){ const t = document.createElement('canvas'); t.width = img.width; t.height = img.height; const g = t.getContext('2d'); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = lin(g, 0, 0, 0, t.height, stops); g.fillRect(0, 0, t.width, t.height); return t; }
+  const SANS = '"Inter Tight","Helvetica Neue",Arial,sans-serif';
+  const trait = k => ((S.traits || []).find(t => t[0] === k) || [0, ''])[1];
+  const position = () => { let v = (S.answers && S.answers.vibe) || ''; if (!v) { try { v = localStorage.getItem('np_vibe') || ''; } catch (e) {} } return String(v || trait('Energy') || '—').slice(0, 24); };
+  const joined = () => S.joined || DATE;
+  function passCard(cv, img, theme, label){
+    const T = PASS[theme], ctx = cv.getContext('2d'), L = 90, R = CW - 90, W = R - L; ctx.clearRect(0, 0, CW, CH);
     ctx.save(); rr(ctx, 0, 0, CW, CH, 48); ctx.clip();
-    ctx.fillStyle = '#2a0408'; ctx.fillRect(0, 0, CW, CH);
-    if (img) cover(ctx, img, 0, 0, CW, CH);
-    let g = ctx.createLinearGradient(0, 0, 0, CH * .16); g.addColorStop(0, 'rgba(20,2,4,.38)'); g.addColorStop(1, 'rgba(20,2,4,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH * .16);
-    g = ctx.createLinearGradient(0, CH * .58, 0, CH); g.addColorStop(0, 'rgba(26,3,6,0)'); g.addColorStop(1, 'rgba(26,3,6,.88)'); ctx.fillStyle = g; ctx.fillRect(0, CH * .58, CW, CH * .42);
-    if (A.lockup) ctx.drawImage(A.lockup, 70, 70, 290, 290 * A.lockup.height / A.lockup.width);
-    ctx.fillStyle = 'rgba(246,243,239,.92)'; ctx.font = `500 30px ${MONO}`; spaced(ctx, tag, CW - 70, 100, 6, 'right');
-    const nm = S.name || 'Trainee';
-    fit(ctx, nm, 600, 210, 90, CW - 140); ctx.fillStyle = '#F6F3EF'; ctx.textAlign = 'left'; ctx.fillText(nm, 66, CH - 196);
-    ctx.font = `500 32px ${MONO}`; ctx.fillStyle = 'rgba(246,243,239,.8)'; spaced(ctx, line, 72, CH - 112, 3);
-    ctx.restore(); edge(ctx);
+    ctx.fillStyle = lin(ctx, 0, 0, CW, CH, T.body); ctx.fillRect(0, 0, CW, CH); brushed(ctx, T.brush);
+    ctx.restore();
+    rr(ctx, 7, 7, CW - 14, CH - 14, 42); ctx.lineWidth = 14; ctx.strokeStyle = lin(ctx, 0, 0, CW, CH, CHROME); ctx.stroke();   // metal rim
+    rr(ctx, 15, 15, CW - 30, CH - 30, 35); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,.32)'; ctx.stroke();
+    rr(ctx, CW / 2 - 105, 52, 210, 42, 21); ctx.fillStyle = T.slot; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = lin(ctx, 0, 50, 0, 96, CHROME); ctx.stroke();   // lanyard slot
+    // agency mark: the lockup in metal + a label-maker ENTERTAINMENT tag
+    if (A.lockup) { const lw = 470, lh = lw * A.lockup.height / A.lockup.width; ctx.drawImage(tintG(A.lockup, T.mark), L - 4, 122, lw, lh); }
+    ctx.save(); ctx.translate(L + 112, 222); ctx.rotate(-.035); ctx.font = `500 27px ${MONO}`; const tw = spacedW(ctx, 'ENTERTAINMENT', 6) + 36;
+    ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3; rr(ctx, 0, 0, tw, 46, 7); ctx.fillStyle = lin(ctx, 0, 0, 0, 46, T.mark); ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.fillStyle = T.pillInk; ctx.textBaseline = 'middle'; spaced(ctx, 'ENTERTAINMENT', 18, 24, 6); ctx.restore(); ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = T.ink; ctx.font = `500 31px ${MONO}`; spaced(ctx, label, R, 166, 7, 'right');
+    ctx.fillStyle = T.soft; ctx.font = `500 25px ${MONO}`; spaced(ctx, 'CLASS OF ' + today.getFullYear(), R, 208, 5, 'right');
+    // photo: full width of the drawing from 2% down; the frame's shape decides the rest. Never fitted per doll.
+    const px = L, py = 296, pw = W, ph = 1010;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18; rr(ctx, px, py, pw, ph, 34); ctx.fillStyle = '#1a0306'; ctx.fill(); ctx.restore();
+    if (img) { ctx.save(); rr(ctx, px, py, pw, ph, 34); ctx.clip(); const sh = img.width * ph / pw;
+      if (sh <= img.height) ctx.drawImage(img, 0, Math.min(img.height * .02, img.height - sh), img.width, sh, px, py, pw, ph); else cover(ctx, img, px, py, pw, ph, .1);
+      ctx.restore(); }
+    rr(ctx, px, py, pw, ph, 34); ctx.lineWidth = 12; ctx.strokeStyle = lin(ctx, px, py, px + pw, py + ph, CHROME); ctx.stroke();
+    rr(ctx, px + 7, py + 7, pw - 14, ph - 14, 28); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.stroke();
+    // name, engraved
+    const nm = (S.name || 'Trainee').toUpperCase(), ns = fitF(ctx, nm, 600, 150, 70, W, SANS);
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 5; ctx.fillStyle = lin(ctx, 0, 1466 - ns * .74, 0, 1466 + ns * .04, T.metal); ctx.textAlign = 'left'; ctx.fillText(nm, L - ns * .045, 1466); ctx.restore();
+    ctx.fillStyle = T.rule; ctx.fillRect(L, 1500, W, 3);
+    const cells = [['ID', 'NP-' + numStr(), L, 280, MONO, 500], ['POSITION', position().toUpperCase(), L + 322, 330, SANS, 600], ['JOINED', joined(), L + 690, 230, MONO, 500]];
+    const vz = Math.min(...cells.map(([, v, , w, fam, wt]) => fitF(ctx, v, wt, 46, 24, w, fam)));   // one size for all three values
+    cells.forEach(([lab, v, x, , fam, wt]) => {
+      ctx.fillStyle = T.soft; ctx.font = `500 26px ${MONO}`; spaced(ctx, lab, x, 1552, 5);
+      ctx.fillStyle = T.ink; ctx.font = `${wt} ${vz}px ${fam}`; ctx.textAlign = 'left'; ctx.fillText(v, x - 1, 1612);
+    });
+  }
+  function cordDraw(cv){   // red cord + metal clip; the ring ends inside the pass's slot
+    const ctx = cv.getContext('2d'), OFF = 280; ctx.clearRect(0, 0, cv.width, cv.height);
+    const strand = (x0, x1) => { ctx.beginPath(); ctx.moveTo(x0, -30); ctx.quadraticCurveTo((x0 + x1) / 2 + (x0 < 550 ? -18 : 18), 70, x1, 168); };
+    [[300, 526], [800, 574]].forEach(([a, b]) => {
+      strand(a, b); ctx.lineWidth = 44; ctx.strokeStyle = lin(ctx, 0, 0, CW, 0, [[0, '#5a070d'], [.3, '#b81a27'], [.5, '#d3323e'], [.7, '#b81a27'], [1, '#5a070d']]); ctx.stroke();
+      strand(a, b); ctx.lineWidth = 44; ctx.setLineDash([5, 9]); ctx.strokeStyle = 'rgba(0,0,0,.16)'; ctx.stroke(); ctx.setLineDash([]);
+      strand(a, b); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
+    });
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 8;
+    rr(ctx, 492, 150, 116, 74, 14); ctx.fillStyle = lin(ctx, 0, 150, 0, 224, CHROME); ctx.fill(); ctx.restore();
+    ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(492, 184, 116, 2);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, CW, OFF + 75); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(550, OFF + 6, 44, 84, 0, 0, 7); ctx.lineWidth = 15; ctx.strokeStyle = lin(ctx, 500, 0, 600, 0, CHROME); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(550, OFF + 6, 44, 84, 0, 0, 7); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.stroke(); ctx.restore();
   }
   function backCard(cv){
     const ctx = cv.getContext('2d'); ctx.clearRect(0, 0, CW, CH);
@@ -936,7 +995,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     ctx.textAlign = 'left'; ctx.fillText(numStr(), 54, 520);
     ctx.fillStyle = 'rgba(246,243,239,.22)'; ctx.fillRect(70, 620, CW - 140, 2);
     const T = k => ((S.traits || []).find(t => t[0] === k) || [0, '—'])[1];
-    const rows = [['STAGE NAME', S.name || 'Trainee'], ['LOOK', T('Hair')], ['VIBE', (S.answers && S.answers.vibe) || T('Energy')], ['JOINED', DATE], ['TRAINING', 'Week 1'], ['DEBUT', 'When the first box ships']];
+    const rows = [['STAGE NAME', S.name || 'Trainee'], ['LOOK', T('Hair')], ['VIBE', (S.answers && S.answers.vibe) || T('Energy')], ['JOINED', joined()], ['TRAINING', 'Week 1'], ['DEBUT', 'When the first box ships']];
     rows.forEach(([k, v], i) => {
       const y = 712 + i * 118;
       ctx.fillStyle = 'rgba(246,243,239,.58)'; ctx.font = `500 26px ${MONO}`; spaced(ctx, k, 70, y, 5);
@@ -956,10 +1015,10 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     const pending = !c.char;
     A.char = pending ? await load(c.face).then(soft).catch(() => null) : await load(c.char).catch(() => null);
     A.debut = c.debut ? await load(c.debut).catch(() => null) : null;
-    photoCard($('#cfront'), A.char, 'TRAINEE', `ID ${numStr()}   ·   JOINED ${DATE}`);
+    passCard($('#cfront'), A.char, 'red', 'TRAINEE'); cordDraw($('#ccord'));
     if (pending) stamp($('#cfront'), 'YOUR DOLL', 'is drawn here on the live site');
     backCard($('#cback'));
-    photoCard($('#cdebut'), A.debut || A.char, 'DEBUT', `ID ${numStr()}   ·   NO NEEDLE, NO HOLE`);
+    passCard($('#cdebut'), A.debut || A.char, 'steel', 'DEBUT');
   }
   function soft(img){   // a heavy blur that works in every browser: shrink, then let the card scale it back up
     const t = document.createElement('canvas'); t.width = 36; t.height = Math.round(36 * img.height / img.width);
@@ -1098,7 +1157,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
       if (res.ok || !(res.status === 403 && res.j.error === 'token')) break;
     }
     if (res && res.ok && res.j.id) {
-      S.tid = String(res.j.id); S.ref = String(res.j.ref || ''); LEFT = typeof res.j.left === 'number' ? res.j.left : null;
+      S.tid = String(res.j.id); S.ref = String(res.j.ref || ''); S.joined = /^\d\d\.\d\d\.\d\d$/.test(res.j.joined || '') ? res.j.joined : ''; LEFT = typeof res.j.left === 'number' ? res.j.left : null;
       if (T_URL) {
         let kept = T_URL !== T;   // a broken ?t= beside a good remembered one: nothing to keep
         if (T_URL === T) { try { localStorage.setItem('np_t', T); kept = localStorage.getItem('np_t') === T; } catch (e) {} }

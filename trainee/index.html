@@ -48,8 +48,8 @@ h2{font-size:clamp(36px,10vw,50px)}
 .on .rise .w>i{animation:rise .8s var(--ease) both;animation-delay:calc(.12s + var(--i,0) * 70ms)}
 @keyframes rise{from{transform:translateY(105%)}to{transform:none}}
 .actions{margin-top:auto;display:flex;flex-direction:column;gap:10px}
-#s-in{overflow-y:auto;-webkit-overflow-scrolling:touch}
-#s-in>*{flex:none}
+#s-in,#s-cast,#s-done{overflow-y:auto;-webkit-overflow-scrolling:touch}
+#s-in>*,#s-cast>*,#s-done>*{flex:none}
 @media (max-height:760px){#s-in{gap:10px} #s-in .num{font-size:clamp(60px,17vw,84px)} #s-in .path li{padding:7px 0}}
 .btn{appearance:none;border:0;font:600 17px/1 var(--f-head);letter-spacing:-.01em;height:56px;border-radius:16px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;width:100%;text-decoration:none;
@@ -140,6 +140,8 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .ages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .agep{appearance:none;border:0;height:44px;border-radius:12px;background:rgba(241,239,236,.08);box-shadow:inset 0 0 0 1px var(--line);color:var(--paper);font:500 15px var(--f-head);cursor:pointer;transition:background .2s,color .2s}
 .agep[aria-checked=true]{background:var(--paper);color:var(--ox)}
+.agep{padding:0 2px;white-space:nowrap}
+@media (max-width:340px){.ages{gap:6px} .agep{font-size:14px}}
 .agep:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
 
 /* reveal */
@@ -242,6 +244,8 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 /* public mode (waitlist people on nopressure.world): no join form, no samples, no training plan */
 .pub #f-join,.pub #samples,.pub #b-samp,.pub #codebox,.pub [data-skip],.pub #b-plan{display:none!important}
 .actions.pubgate{display:none}
+#b-nophoto{display:none}
+.pub #b-nophoto{display:block;text-align:left}
 .pub .actions.pubgate{display:flex}
 .consent{display:flex;flex-direction:column;gap:6px;margin-top:14px}
 .consent label{display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:14px;line-height:1.4;color:var(--paper);letter-spacing:-.005em}
@@ -346,6 +350,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
         </div>
         <div class="field" id="codebox"><label class="lab" for="tcode">Team code</label><input id="tcode" autocomplete="off" autocapitalize="characters" placeholder="From Ryan" maxlength="20"></div>
         <button type="button" class="swap" id="b-samp" aria-expanded="false" aria-controls="samples">Or try a sample casting</button>
+        <button type="button" class="swap" id="b-nophoto">No photo? Just answer a few quick questions</button>
         <p class="note" id="castnote">Your photo is used to draw your character, then dropped within 10 minutes. It is never saved.</p>
         <input type="file" id="fcam" accept="image/*" capture="user">
         <input type="file" id="fup" accept="image/*">
@@ -371,6 +376,18 @@ if (PUBLIC) document.documentElement.classList.add('pub');
       <h2 class="qh" id="qh" aria-live="polite"></h2>
       <div class="opts" id="qopts"></div>
       <div class="actions"><button class="btn text" id="qskip">Skip this one</button></div>
+    </section>
+
+    <!-- NO PHOTO: the questions are in -->
+    <section class="scr" id="s-done" aria-label="Your answers are in">
+      <span class="lab" id="donelab">Trainee ID</span>
+      <h2 class="rise"><span class="w"><i style="--i:0">Thanks,</i></span> <span class="w"><i style="--i:1">trainee.</i></span></h2>
+      <p class="sub" id="donesub">Your answers are in.</p>
+      <div class="actions">
+        <button class="btn pri" id="b-donecast" data-go="cast">Make my character</button>
+        <button class="btn ghost" id="b-doneshare">Send to a friend</button>
+      </div>
+      <div class="toast"></div>
     </section>
 
     <!-- 03 REVEAL -->
@@ -678,14 +695,16 @@ if (PUBLIC) document.documentElement.classList.add('pub');
       : !S.age ? 'Pick your age group to use your own photo.'
       : `You can make ${LEFT === null ? 3 : LEFT} characters. Your photo is used to draw your character, then dropped within 10 minutes.`;
   }
-  document.querySelectorAll('.agep').forEach(b => b.addEventListener('click', () => {
-    S.age = b.dataset.age; vib(6);
-    document.querySelectorAll('.agep').forEach(x => x.setAttribute('aria-checked', x === b ? 'true' : 'false'));
+  function setAge(a){
+    S.age = a;
+    document.querySelectorAll('.agep').forEach(x => x.setAttribute('aria-checked', x.dataset.age === a ? 'true' : 'false'));
     photoGate();
-    if (S.age === 'Under 18') ev('under18'); else ev('age', S.age);
-  }));
+    if (a === 'Under 18') ev('under18'); else ev('age', a);
+  }
+  document.querySelectorAll('.agep').forEach(b => b.addEventListener('click', () => { vib(6); setAge(b.dataset.age); }));
   $('#ok18').addEventListener('change', photoGate);
   enter.cast = async () => {
+    $('#b-nophoto').hidden = !!S.answered;   // answered once this visit: no second round of questions
     $('#samples').hidden = true; $('#b-samp').setAttribute('aria-expanded', 'false'); $('#b-samp').textContent = 'Or try a sample casting';
     photoGate();
     if (PUBLIC) { try { const r = await whoCall(); if (r.ok && typeof r.j.left === 'number') LEFT = r.j.left; } catch (e) {} photoGate(); return; }
@@ -693,8 +712,8 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     photoGate();
   };
   const OWN_MS = 32000;
-  const isReady = () => S.pick === 'own' ? !!(CAST.own && CAST.own.char) : drawLeft() <= 0;
-  const progress = () => S.pick === 'own' ? (CAST.own && CAST.own.char ? 1 : Math.min(.95, (performance.now() - S.drawAt) / OWN_MS)) : 1 - drawLeft() / DRAW_MS;
+  const isReady = () => S.pick === 'none' ? true : S.pick === 'own' ? !!(CAST.own && CAST.own.char) : drawLeft() <= 0;
+  const progress = () => S.pick === 'none' ? qi / QL.length : S.pick === 'own' ? (CAST.own && CAST.own.char ? 1 : Math.min(.95, (performance.now() - S.drawAt) / OWN_MS)) : 1 - drawLeft() / DRAW_MS;
   async function ownTraits(){
     await S.casting;
     for (;;) {
@@ -739,7 +758,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     }
     $('#styling').classList.remove('reading');
     await wait(700); if (id !== runId) return;
-    go('quiz');
+    go(PUBLIC && S.answered ? 'name' : 'quiz');   // public: the 5 questions are asked once per visit, not once per casting
   };
 
   // ---------- reveal
@@ -785,27 +804,31 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     { k: 'shop', q: 'Where do you usually buy beauty stuff?', o: ['Sephora', 'Ulta', 'Olive Young', 'Amazon', 'TikTok Shop', 'Somewhere else'] },
     { k: 'vibe', q: 'Pick a vibe for your character.', o: ['Main character', 'Quiet one', 'Chaos', 'The leader'] },
   ];
+  // no photo and no age group picked yet: the age group is asked first (same values the casting screen sends)
+  const AGEQ = { k: 'age', q: 'What is your age group?', o: ['Under 18', '18-24', '25-34', '35+'] };
   S.answers = {};
-  let qi = 0, qId = 0;
+  let qi = 0, qId = 0, QL = QS;
   enter.quiz = () => {
+    QL = S.pick === 'none' && !S.age ? [AGEQ, ...QS] : QS;
     qi = 0; S.answers = {}; showQ();
+    if (S.pick === 'none') $('#steps').textContent = '';
     const id = ++qId;
     (async () => {
       while (cur === 'quiz' && id === qId) {
         const p = Math.round(100 * Math.max(0, Math.min(1, progress())));
-        $('#qbar').style.width = p + '%'; $('#qpct').textContent = isReady() ? 'Ready' : (S.pick === 'own' && S.err) ? 'Drawing stopped' : `Drawing · ${p}%`;
+        $('#qbar').style.width = p + '%'; $('#qpct').textContent = S.pick === 'none' ? '' : isReady() ? 'Ready' : (S.pick === 'own' && S.err) ? 'Drawing stopped' : `Drawing · ${p}%`;
         await wait(200);
       }
     })();
   };
   function showQ(){
-    const q = QS[qi];
-    $('#qcount').textContent = `Quick question ${qi + 1} of ${QS.length}`;
+    const q = QL[qi];
+    $('#qcount').textContent = `Quick question ${qi + 1} of ${QL.length}`;
     const h = $('#qh'); h.textContent = q.q; h.classList.remove('qswap'); void h.offsetWidth; h.classList.add('qswap');
     const box = $('#qopts'); box.innerHTML = '';
     q.o.forEach((o, i) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt qswap'; b.style.animationDelay = (50 * i) + 'ms'; b.textContent = o;
-      b.addEventListener('click', () => { if (box.dataset.lock) return; box.dataset.lock = '1'; S.answers[q.k] = o; if (PUBLIC) saveAnswer(q.k, o); b.classList.add('picked'); vib(8); setTimeout(() => { delete box.dataset.lock; nextQ(); }, 260); });
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt qswap'; b.style.animationDelay = (50 * i) + 'ms'; b.textContent = q === AGEQ ? o.replace('-', '–') : o;
+      b.addEventListener('click', () => { if (box.dataset.lock) return; box.dataset.lock = '1'; if (q === AGEQ) setAge(o); else { S.answers[q.k] = o; if (PUBLIC) saveAnswer(q.k, o); } b.classList.add('picked'); vib(8); setTimeout(() => { delete box.dataset.lock; nextQ(); }, 260); });
       box.appendChild(b);
     });
   }
@@ -815,12 +838,30 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   }
   function nextQ(){
     qi++;
-    if (qi < QS.length) return showQ();
-    if (PUBLIC) { api('answers', { answers: Object.assign({ age: S.age }, S.answers) }, true).catch(() => {}); ev('quiz'); }
+    if (qi < QL.length) return showQ();
+    if (PUBLIC) { api('answers', { answers: Object.assign({ age: S.age }, S.answers) }, true).catch(() => {}); ev('quiz'); S.answered = true; }
     else if (S.pick === 'own' && S.job) api('answers', { id: S.job, answers: Object.assign({ age: S.age }, S.answers) }).catch(() => {});
-    go('name');
+    go(S.pick === 'none' ? 'done' : 'name');
   }
   $('#qskip').addEventListener('click', nextQ);
+
+  // ---------- no photo: just the 5 questions (public). They can still make a character later from the finish screen.
+  $('#b-nophoto').addEventListener('click', () => {
+    if (!PUBLIC) return;
+    S.pick = 'none'; S.err = null; vib(8); ev('nophoto'); go('quiz');
+  });
+  enter.done = () => {
+    const u18 = S.age === 'Under 18', none = LEFT === 0, made = typeof LEFT === 'number' && LEFT > 0 && LEFT < 3;
+    $('#donelab').textContent = 'Trainee ID ' + numStr();
+    $('#donesub').textContent = u18 ? "Your answers are in. You're on the list, and we'll message you when the doors open."
+      : none ? "Your answers are in. You've made your 3 characters."
+      : made ? 'Your answers are in. You can make another character: one photo, about 30 seconds.'
+      : 'Your answers are in. Your character is still waiting: one photo, about 30 seconds.';
+    $('#b-donecast').textContent = made ? 'Make another character' : 'Make my character';
+    $('#b-donecast').hidden = u18 || none;
+    $('#b-doneshare').className = u18 || none ? 'btn pri' : 'btn ghost';
+    vib([8, 30, 8]);
+  };
 
   // ---------- name
   const nameIn = $('#name');
@@ -971,7 +1012,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   $('#debut').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dTap(); } });
 
   let dl = null; (async () => { try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (e) { dl = null; } })();
-  function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('in'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('in'), 2200); }
+  function toast(t){ const el = $('#s-' + cur + ' .toast') || $('#toast'); el.textContent = t; el.classList.add('in'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('in'), 2200); }
   $('#b-save').addEventListener('click', async () => {
     const cv = flipped ? $('#cback') : $('#cfront');
     const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
@@ -986,7 +1027,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   });
 
   // public: "Send to a friend" shares the person's own referral link
-  $('#b-share').addEventListener('click', async () => {
+  async function shareLink(){
     const url = 'https://nopressure.world/?ref=' + S.ref;
     if (navigator.share) {
       try { await navigator.share({ title: 'NO PRESSURE', text: 'I just became a NO PRESSURE trainee. Get on the list.', url }); ev('share'); return; }
@@ -999,7 +1040,9 @@ if (PUBLIC) document.documentElement.classList.add('pub');
         document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (_) {}
     }
     if (ok) { toast('Link copied'); ev('share'); } else toast('Could not copy the link');
-  });
+  }
+  $('#b-share').addEventListener('click', shareLink);
+  $('#b-doneshare').addEventListener('click', shareLink);
 
   // ---------- training plan + today's message
   enter.train = () => {
@@ -1031,7 +1074,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   };
   $('#t-email').addEventListener('click', () => tab('email')); $('#t-text').addEventListener('click', () => tab('text'));
   $('#b-restart').addEventListener('click', () => {
-    Object.assign(S, { contact: '', pick: null, ownURL: null, ownFile: null, traits: [], name: '', skipped: false });
+    Object.assign(S, { contact: '', pick: null, ownURL: null, ownFile: null, traits: [], name: '', skipped: false, answered: false });
     $('#contact').value = ''; nameIn.value = ''; $('#ncount').textContent = '0 / 12'; $('#b-name').disabled = true;
     tab('email'); go('join');
   });

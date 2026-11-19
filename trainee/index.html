@@ -50,7 +50,32 @@ h2{font-size:clamp(36px,10vw,50px)}
 .actions{margin-top:auto;display:flex;flex-direction:column;gap:10px}
 #s-in,#s-cast,#s-done{overflow-y:auto;-webkit-overflow-scrolling:touch}
 #s-in>*,#s-cast>*,#s-done>*{flex:none}
-@media (max-height:760px){#s-in{gap:10px} #s-in .num{font-size:clamp(60px,17vw,84px)} #s-in .path li{padding:7px 0}}
+@media (max-height:760px){#s-in{gap:10px}}
+/* landing: your manager hands you your ID (Ryan 2026-11-18: "like an intern ... your supervisor gives you your ID") */
+.mgr{display:flex;align-items:center;gap:10px}
+.mgr .mj{width:30px;height:30px;border-radius:50%;background:var(--paper);color:var(--ox);display:flex;align-items:center;justify-content:center;font:500 11px/1 var(--f-mono);letter-spacing:.04em;flex:none}
+#s-in h2{font-size:clamp(30px,8.4vw,38px);line-height:1.02}
+#s-in .idstage{flex:1 1 auto;min-height:260px;display:flex;align-items:center;justify-content:center;padding-bottom:14px}
+.idpass{position:relative;height:100%;max-height:min(480px,100%);aspect-ratio:1100/1980;transform:rotate(-4deg);transform-origin:50% 0}
+.on .idpass{animation:handover .9s var(--ease) .25s both}
+@keyframes handover{from{opacity:0;transform:translateY(-28px) rotate(-10deg)}to{opacity:1;transform:rotate(-4deg)}}
+.idpass canvas{position:absolute;left:0;width:100%;height:auto}
+.idpass .ipcard{top:14.14%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55))}
+.idpass .ipcord{top:0;z-index:2;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 46%);mask-image:linear-gradient(to bottom,transparent 0,#000 46%)}
+.idpass .ipwin{position:absolute;left:8.18%;width:83.64%;top:calc(14.14% + 85.86% * .1741);height:calc(85.86% * .5941);border-radius:7px;border:0;padding:0;margin:0;cursor:pointer;
+  background:radial-gradient(120% 90% at 50% 40%,#3a2326 0,#1c0d0f 70%);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.idpass .ipwin:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+.ipplus{width:64px;height:64px;border-radius:50%;background:var(--paper);color:var(--ox);display:flex;align-items:center;justify-content:center;font:500 38px/1 var(--f-head);box-shadow:0 0 0 10px rgba(241,239,236,.14),0 10px 30px rgba(0,0,0,.5);transition:transform .25s var(--ease)}
+.ipwin:active .ipplus{transform:scale(.94)}
+.ipnote{position:absolute;right:-6%;top:30.5%;z-index:3;background:var(--paper);color:#2a0507;padding:10px 12px 9px;transform:rotate(5deg);box-shadow:0 10px 24px rgba(0,0,0,.5);font:500 10px/1.45 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;pointer-events:none}
+.ipnote::before{content:"";position:absolute;top:-10px;left:50%;width:46px;height:18px;margin-left:-23px;background:rgba(226,214,190,.92);box-shadow:0 1px 2px rgba(0,0,0,.25);transform:rotate(-6deg)}
+.ipnote b{font-weight:500}
+.idpass .ipwin,.idpass .ipnote{opacity:0;transition:opacity .35s}
+.idpass.drawn .ipwin,.idpass.drawn .ipnote{opacity:1}
+@supports not (aspect-ratio:1){.idpass{height:auto;width:min(267px,60vw);padding-top:min(480px,108vw)}}
+#s-in .took{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:center;margin:0}
+@media (max-height:700px){.ipnote{font-size:8.5px;padding:7px 9px 6px;top:29%}.ipplus{width:54px;height:54px;font-size:32px}}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .btn{appearance:none;border:0;font:600 17px/1 var(--f-head);letter-spacing:-.01em;height:56px;border-radius:16px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;width:100%;text-decoration:none;
   transition:transform .25s var(--ease), background .25s, opacity .25s}
@@ -262,6 +287,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
   .scr,.scr.off{transform:none}
   .on .rise .w>i,.rise .w>i{animation:none;transform:none}
   .on .path li,.path li{animation:none;opacity:1;transform:none}
+  .on .idpass,.idpass{animation:none}
   .on .rv img.ch,.on .rv .sweep,.on .deck .card3d,.reading .scan{animation:none}
   .flip{transition:none}
 }
@@ -305,20 +331,22 @@ if (PUBLIC) document.documentElement.classList.add('pub');
       </div>
     </section>
 
-    <!-- YOU'RE IN: the training path -->
-    <section class="scr" id="s-in" aria-label="Your training">
-      <span class="lab">You're in</span>
-      <div class="num" aria-live="polite"><small>ID</small><span id="numv">····</span></div>
-      <h2 class="rise"><span class="w"><i style="--i:0">Your training</i></span> <span class="w"><i style="--i:1">starts now.</i></span></h2>
-      <ol class="path" aria-label="Training stages">
-        <li class="now" style="--i:0"><span class="k">01</span><div><b>Casting</b><span class="d">One photo of you</span></div><em>Now</em></li>
-        <li style="--i:1"><span class="k">02</span><div><b>Styling</b><span class="d">We read your look</span></div><em></em></li>
-        <li style="--i:2"><span class="k">03</span><div><b>Your character</b><span class="d">You, as a NO PRESSURE doll. Ready in seconds.</span></div><em></em></li>
-        <li style="--i:3"><span class="k">04</span><div><b>Training</b><span class="d">Short lessons in your inbox</span></div><em></em></li>
-        <li class="lock" style="--i:4"><span class="k">05</span><div><b>Debut</b><span class="d">When you buy, your character wears the X</span></div><em>Locked</em></li>
-      </ol>
+    <!-- YOU'RE IN: your manager hands you your ID -->
+    <section class="scr" id="s-in" aria-label="Your ID">
+      <div class="mgr"><span class="mj" aria-hidden="true">MJ</span><span class="lab">From your manager</span></div>
+      <h2 class="rise"><span class="w"><i style="--i:0">Welcome in.</i></span><br><span class="w"><i style="--i:1">Let’s get your ID.</i></span></h2>
+      <p class="sr" aria-live="polite">Your trainee ID is <span id="numv">····</span>. It needs your photo.</p>
+      <div class="idstage">
+        <div class="idpass">
+          <canvas class="ipcord" id="ipcord" width="1100" height="380" aria-hidden="true"></canvas>
+          <canvas class="ipcard" id="ipcard" width="1100" height="1700" aria-hidden="true"></canvas>
+          <button type="button" class="ipwin" data-go="cast" tabindex="-1" aria-hidden="true"><span class="ipplus">+</span></button>
+          <div class="ipnote" aria-hidden="true"><b>Needs your photo</b><br>— MJ</div>
+        </div>
+      </div>
       <div class="actions">
-        <button class="btn pri" data-go="cast">Start casting</button>
+        <button class="btn pri" data-go="cast">Take my ID photo</button>
+        <p class="took">Takes 30 seconds</p>
         <button class="btn text" data-go="train" data-skip="1">Later</button>
       </div>
     </section>
@@ -562,21 +590,9 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     S.tid = makeId((S.contact || '') + Date.now());
     vib(12); go('in');
   });
-  const PUBL = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   enter.in = () => {
-    const el = $('#numv'), target = S.tid, t0 = performance.now(), dur = reduce ? 0 : 1200;
-    let last = 0;
-    if (PUBLIC) {   // the ID is the person's code (4-12 characters): scale it down to fit the screen
-      const box = el.parentElement; box.style.fontSize = ''; el.textContent = target;
-      if (box.scrollWidth > box.clientWidth) box.style.fontSize = (parseFloat(getComputedStyle(box).fontSize) * box.clientWidth / box.scrollWidth * .9).toFixed(1) + 'px';
-    }
-    const tick = t => {   // each character shuffles, then locks in, left to right
-      const p = dur ? Math.min(1, (t - t0) / dur) : 1;
-      if (p >= 1 || t - last > 55) { last = t;
-        el.textContent = [...target].map((c, i) => p >= (i + 1) / target.length ? c : PUBLIC ? PUBL[Math.floor(Math.random() * PUBL.length)] : (i === 1 ? IDD : IDL)[Math.floor(Math.random() * (i === 1 ? 7 : 15))]).join(''); }
-      if (p < 1) requestAnimationFrame(tick); else vib([8, 40, 8]);
-    };
-    requestAnimationFrame(tick);
+    $('#numv').textContent = S.tid;
+    Promise.all([base, fontsReady]).then(() => { passCard($('#ipcard'), null, 'red', 'TRAINEE', true); cordDraw($('#ipcord')); $('#s-in .idpass').classList.add('drawn'); vib([8, 40, 8]); }).catch(() => {});
   };
 
   // ---------- casting
@@ -928,7 +944,7 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   const trait = k => ((S.traits || []).find(t => t[0] === k) || [0, ''])[1];
   const position = () => { let v = (S.answers && S.answers.vibe) || ''; if (!v) { try { v = localStorage.getItem('np_vibe') || ''; } catch (e) {} } return String(v || trait('Energy') || '—').slice(0, 24); };
   const joined = () => S.joined || DATE;
-  function passCard(cv, img, theme, label){
+  function passCard(cv, img, theme, label, empty){
     const T = PASS[theme], ctx = cv.getContext('2d'), L = 90, R = CW - 90, W = R - L; ctx.clearRect(0, 0, CW, CH);
     ctx.save(); rr(ctx, 0, 0, CW, CH, 48); ctx.clip();
     ctx.fillStyle = lin(ctx, 0, 0, CW, CH, T.body); ctx.fillRect(0, 0, CW, CH); brushed(ctx, T.brush);
@@ -952,10 +968,11 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     rr(ctx, px, py, pw, ph, 34); ctx.lineWidth = 12; ctx.strokeStyle = lin(ctx, px, py, px + pw, py + ph, CHROME); ctx.stroke();
     rr(ctx, px + 7, py + 7, pw - 14, ph - 14, 28); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.stroke();
     // name, engraved
-    const nm = (S.name || 'Trainee').toUpperCase(), ns = fitF(ctx, nm, 600, 150, 70, W, SANS);
+    const blank = empty && !S.name, nm = blank ? '' : (S.name || 'Trainee').toUpperCase(), ns = blank ? 120 : fitF(ctx, nm, 600, 150, 70, W, SANS);
+    if (blank) { ctx.fillStyle = T.soft; ctx.font = `500 26px ${MONO}`; spaced(ctx, 'STAGE NAME', L, 1470, 5); }
     ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 5; ctx.fillStyle = lin(ctx, 0, 1466 - ns * .74, 0, 1466 + ns * .04, T.metal); ctx.textAlign = 'left'; ctx.fillText(nm, L - ns * .045, 1466); ctx.restore();
     ctx.fillStyle = T.rule; ctx.fillRect(L, 1500, W, 3);
-    const cells = [['ID', 'NP-' + numStr(), L, 280, MONO, 500], ['POSITION', position().toUpperCase(), L + 322, 330, SANS, 600], ['JOINED', joined(), L + 690, 230, MONO, 500]];
+    const cells = [['ID', 'NP-' + numStr(), L, 280, MONO, 500], ['POSITION', (empty && position() === '—' ? 'TBA' : position()).toUpperCase(), L + 322, 330, SANS, 600], ['JOINED', joined(), L + 690, 230, MONO, 500]];
     const vz = Math.min(...cells.map(([, v, , w, fam, wt]) => fitF(ctx, v, wt, 46, 24, w, fam)));   // one size for all three values
     cells.forEach(([lab, v, x, , fam, wt]) => {
       ctx.fillStyle = T.soft; ctx.font = `500 26px ${MONO}`; spaced(ctx, lab, x, 1552, 5);
@@ -1171,7 +1188,6 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     gate(res && res.status === 403 && res.j.error === 'token' ? 'token' : 'closed');
   }
   if (PUBLIC) {
-    $('#s-in .path li:nth-child(4) .d').textContent = "Coming soon. We'll message you.";
     $('#consent').hidden = false;
     $('#b-save').className = 'btn pri'; $('#b-share').hidden = false;
     $('#pubretry').addEventListener('click', checkLink);

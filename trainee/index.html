@@ -1104,11 +1104,24 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     } catch (err) { if (err && (err.code === 'declined' || err.name === 'AbortError')) return; toast('Saving is off in this view'); }
   });
 
-  // public: "Send to a friend" shares the person's own referral link
-  async function shareLink(){
+  // public: "Send to a friend" shares the person's own referral link; from the card screen it sends the card image with it
+  // (Nov 20 2026: 12 of 12 card-reachers saved, 0 shared a bare link; the card is the thing worth sending)
+  async function shareLink(withCard){
     const url = 'https://nopressure.world/?ref=' + S.ref;
+    const text = 'I just became a NO PRESSURE trainee. Get on the list.';
+    if (withCard === true && navigator.canShare) {
+      try {
+        const cv = flipped ? $('#cback') : $('#cfront');
+        const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+        if (blob) {
+          const file = new File([blob], `NO-PRESSURE-trainee-${numStr()}${flipped ? '-back' : ''}.png`, { type: 'image/png' });
+          const data = { files: [file], text: text + ' ' + url };   // the link rides in the text: some apps drop `url` when files are attached
+          if (navigator.canShare(data)) { await navigator.share(data); ev('share'); return; }
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }   // anything else falls through to the link share
+    }
     if (navigator.share) {
-      try { await navigator.share({ title: 'NO PRESSURE', text: 'I just became a NO PRESSURE trainee. Get on the list.', url }); ev('share'); return; }
+      try { await navigator.share({ title: 'NO PRESSURE', text, url }); ev('share'); return; }
       catch (e) { if (e && e.name === 'AbortError') return; }   // a cancelled share is silent; anything else falls back to copying
     }
     let ok = false;
@@ -1119,8 +1132,8 @@ if (PUBLIC) document.documentElement.classList.add('pub');
     }
     if (ok) { toast('Link copied'); ev('share'); } else toast('Could not copy the link');
   }
-  $('#b-share').addEventListener('click', shareLink);
-  $('#b-doneshare').addEventListener('click', shareLink);
+  $('#b-share').addEventListener('click', () => shareLink(true));
+  $('#b-doneshare').addEventListener('click', () => shareLink(false));
 
   // ---------- training plan + today's message
   enter.train = () => {
@@ -1189,7 +1202,9 @@ if (PUBLIC) document.documentElement.classList.add('pub');
   }
   if (PUBLIC) {
     $('#consent').hidden = false;
-    $('#b-save').className = 'btn pri'; $('#b-share').hidden = false;
+    // public card screen: sending the card leads, saving sits under it
+    const bs = $('#b-share'); bs.textContent = 'Send my card to a friend'; bs.className = 'btn pri'; bs.hidden = false;
+    $('#b-save').before(bs); $('#b-save').className = 'btn ghost';
     $('#pubretry').addEventListener('click', checkLink);
     checkLink();
   }
